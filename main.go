@@ -4,6 +4,7 @@ import (
 	"log"
 	"mail-telemetry/api"
 	"mail-telemetry/cron"
+	"mail-telemetry/db"
 	"mail-telemetry/tasks"
 	"mail-telemetry/utils"
 
@@ -21,9 +22,7 @@ func main() {
 	}
 
 	// Connect to the databases
-	// if os.Getenv("DB_SQLITE_ENABLE") == "true" {
-	// 	utils.LoadDbConnectToSqlite()
-	// }
+	db.LoadDbConnectToSqlite()
 
 	// Initial run of tasks on startup as a non-blocking goroutine
 	go tasks.InitTasks()
