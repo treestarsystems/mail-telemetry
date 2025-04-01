@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"math/rand"
 	"strings"
 )
@@ -18,4 +19,8 @@ func RandomAplhaNumericString(length int) string {
 
 func ParseEnvVarStringToArray(envVarString string) []string {
 	return strings.Split(envVarString, ",")
+}
+
+func FormatTestFailureString(testName string, returnedValue any, expectedValue any) string {
+	return fmt.Sprintf("\nxxx FAILED (%s) - Got: %v, Expected: %v", testName, returnedValue, expectedValue)
 }
