@@ -1,0 +1,3 @@
+name,type,from,to,description
+"internal-external","O365","a@a.com","b@b.com","Mail from platform users"
+"external-internal","SMTP","c@c.com","a@a.com","Mail to platform users"

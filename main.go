@@ -3,9 +3,7 @@ package main
 import (
 	"log"
 	"mail-telemetry/api"
-	"mail-telemetry/cron"
 	"mail-telemetry/db"
-	"mail-telemetry/tasks"
 	"mail-telemetry/utils"
 
 	"github.com/joho/godotenv"
@@ -21,14 +19,17 @@ func main() {
 		log.Fatalf("error - Error loading .env file: %s", err)
 	}
 
+	// Parse scenarios.csv
+	utils.ParseScenariosCSV("./scenarios.csv")
+
 	// Connect to the databases
 	db.LoadDbConnectToSqlite()
 
 	// Initial run of tasks on startup as a non-blocking goroutine
-	go tasks.InitTasks()
+	// go tasks.InitTasks()
 
 	// Initialize cron jobs
-	cron.InitCron()
+	// cron.InitCron()
 
 	// Start webserver
 	api.StartServer()
