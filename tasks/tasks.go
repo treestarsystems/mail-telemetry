@@ -5,7 +5,7 @@ import (
 )
 
 func InitTasks() {
-	TelemetryScenario_of365("Test")
+	// TelemetryScenario_of365("Test")
 }
 
 func TelemetryScenario_of365(scenarioName string) {

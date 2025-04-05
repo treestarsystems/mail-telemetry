@@ -1,16 +1,19 @@
 package db
 
 import (
+	"mail-telemetry/utils"
+
 	"gorm.io/gorm"
 )
 
 // SharedStructJobs contains common job information from each job listing.
-type Scenario struct {
-	ScenarioId string `bson:"job_id" json:"jobId" binding:"required"`
+type ScenarioLoadDB struct {
+	ScenarioId   string         `json:"scenarioId" binding:"required"`
+	ScenarioData utils.Scenario `json:"scenarioData" binding:"required"`
 }
 
 type LoadDbInsertGorm struct {
-	Scenario
+	Scenario  ScenarioLoadDB
 	ID        uint           `gorm:"primarykey"`
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 }

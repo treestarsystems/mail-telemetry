@@ -1,9 +1,10 @@
 package utils
 
 type Scenario struct {
-	Name        string `bson:"name" json:"name" binding:"required"`
-	Type        string `bson:"type" json:"type" binding:"required"`
-	FromEmail   string `bson:"fromEmail" json:"fromEmail" binding:"required"`
-	ToEmail     string `bson:"toEmail" json:"toEmail" binding:"required"`
-	Description string `bson:"description" json:"description"`
+	Name               string `json:"name" binding:"required"`
+	Type               string `json:"type" binding:"required"`
+	CredentialLocation string `json:"credentialLocation" binding:"required"`
+	FromEmail          string `json:"fromEmail" binding:"required"`
+	ToEmail            string `json:"toEmail" binding:"required"`
+	Description        string `json:"description"`
 }
