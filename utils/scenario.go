@@ -2,71 +2,74 @@ package utils
 
 import (
 	"encoding/csv"
-	"fmt"
 	"log"
+	"net/mail"
 	"os"
+	"slices"
+	"strings"
 )
 
 func ParseScenariosCSV(csvFilePath string) []Scenario {
 	var scenarios []Scenario
-	// open file
 	f, err := os.Open(csvFilePath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// remember to close the file at the end of the program
 	defer f.Close()
 
 	// Standard error string.
 	prependErrorString := "Malformed scenarios file."
 
-	// read csv values using csv.Reader
+	// Read csv values using csv.Reader
 	data, err := csv.NewReader(f).ReadAll()
 	if err != nil {
 		log.Fatalf("%s %s", prependErrorString, err)
 	}
 
-	// Check for required headers in file before further processing.
+	// Store headers as a map of field names and it's associated index.
+	headersMap := make(map[int]string)
+
+	// Set default value to determine futher processing.
 	isValidScenariosFile := false
-scenarioValidationLoop:
-	for _, line := range data {
-		// lineNumber := i + 1
-		fmt.Print(line)
 
-		// *** The library has a check for field counts per line.
-		// Check each line has the correct amount of fields.
-		// expectedFieldLength := 6
-		// if len(line) != expectedFieldLength {
-		// 	log.Fatalf("%s Each line should contain %v comma separated values. Line %v contains %v items.", prependErrorString, expectedFieldLength, lineNumber, len(line))
-		// 	break scenarioValidationLoop
-		// }
+	// This validation loop will invalidate the WHOLE file if one row is malformed/incorrect.
+	for lineIndex, line := range data {
+		lineNumber := lineIndex + 1
+		// Generate map of headers and their associated index to use later in if-statments.
+		if lineIndex == 0 {
+			for fieldIndex, field := range line {
+				headersMap[fieldIndex] = field
+			}
+		} else {
+			// Check that all fields contain the correct data.
+			for fieldIndex, fieldData := range line {
+				currentFieldName := headersMap[fieldIndex]
+				// Check that required fields are not empty strings.
+				if currentFieldName != "description" {
+					if fieldData == "" {
+						log.Printf("%s The \"%s\" field can not be empty.", prependErrorString, currentFieldName)
+						return scenarios
+					}
+				}
+				// Check email fields have a valid email address.
+				if currentFieldName == "from" || currentFieldName == "to" {
+					_, err := mail.ParseAddress(fieldData)
+					if err != nil {
+						log.Printf("%s The %s email is not valid: %v.", prependErrorString, currentFieldName, fieldData)
+						return scenarios
+					}
+				}
 
-		// Check that all fields contain data.
-		for j, field := range line {
-			// Check that required fields are not empty strings.
-			if field != "description" {
-				if field == "" {
-					log.Fatalf("%s %v - This field can not be empty", prependErrorString, field)
+				// Check credentialsLocation has a valid value.
+				if currentFieldName == "credentialLocation" {
+					validCredentialLocationStrings := []string{"file", "database", "secretstore"}
+					if !slices.Contains(validCredentialLocationStrings, fieldData) {
+						log.Printf("%s Invalid credentialLocation string on line/row %v of scenarios file. Should be either one of the following values: [%v].", prependErrorString, lineNumber, strings.Join(validCredentialLocationStrings, ","))
+						return scenarios
+					}
 				}
 			}
-
-			// 	// Check email fields have a valid email address.
-			// 	if field == "from" || field == "to" {
-			// 		_, err := mail.ParseAddress(field)
-			// 		if err != nil {
-			// 			log.Fatalf("%s The ", prependErrorString)
-			// 		}
-			// 	}
-			// 	// Check credentialsLocation has a valid value.
-			// 	fmt.Print(j, field)
-			// 	if field == "credentialLocation" {
-			// 		validCredentialLocationStrings := []string{"file", "database", "secretstore"}
-			// 		if !slices.Contains(validCredentialLocationStrings, field) {
-			// 			log.Fatalf("%s Invalid credentialLocation string. Shold be either one of the following values: %v", prependErrorString, strings.Join(validCredentialLocationStrings, ""))
-			// 			return scenarios
-			// 		}
-			// 	}
 		}
 		isValidScenariosFile = true
 	}
@@ -86,5 +89,7 @@ scenarioValidationLoop:
 			}
 		}
 	}
+
+	log.Print(isValidScenariosFile, scenarios)
 	return scenarios
 }
