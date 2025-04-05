@@ -19,7 +19,7 @@ func ParseScenariosCSV(csvFilePath string) []Scenario {
 	defer f.Close()
 
 	// Standard error string.
-	prependErrorString := "Malformed scenarios file."
+	prependErrorString := "malformed scenarios file."
 
 	// Read csv values using csv.Reader
 	data, err := csv.NewReader(f).ReadAll()
