@@ -2,10 +2,11 @@ package tasks
 
 import (
 	"log"
+	"mail-telemetry/db"
 )
 
 func InitTasks() {
-	// TelemetryScenario_of365("Test")
+	db.LoadDbMultipleScenariosToSqlite("scenarios")
 }
 
 func TelemetryScenario_of365(scenarioName string) {
