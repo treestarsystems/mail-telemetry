@@ -4,6 +4,7 @@ import (
 	"log"
 	"mail-telemetry/api"
 	"mail-telemetry/cron"
+	"mail-telemetry/db"
 	"mail-telemetry/tasks"
 	"mail-telemetry/utils"
 
@@ -24,7 +25,7 @@ func main() {
 	utils.ParseScenariosCSV("./scenarios.csv")
 
 	// Connect to the databases
-	// db.LoadDbConnectToSqlite()
+	db.LoadDbConnectToSqlite()
 
 	// Initial run of tasks on startup as a non-blocking goroutine
 	go tasks.InitTasks()

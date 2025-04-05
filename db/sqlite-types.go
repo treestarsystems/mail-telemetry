@@ -6,14 +6,14 @@ import (
 	"gorm.io/gorm"
 )
 
-// SharedStructJobs contains common job information from each job listing.
-type ScenarioLoadDB struct {
-	ScenarioId   string         `json:"scenarioId" binding:"required"`
-	ScenarioData utils.Scenario `json:"scenarioData" binding:"required"`
+type LoadDbInsertGormScenario struct {
+	utils.Scenario
+	ID        uint           `gorm:"primarykey"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
-type LoadDbInsertGorm struct {
-	Scenario  ScenarioLoadDB
+type LoadDbInsertGormCredential struct {
+	utils.Credential
 	ID        uint           `gorm:"primarykey"`
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 }

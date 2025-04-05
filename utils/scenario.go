@@ -76,8 +76,8 @@ func ParseScenariosCSV(csvFilePath string) []Scenario {
 
 	// Organize csv data into struct
 	if isValidScenariosFile {
-		for i, line := range data {
-			if i > 0 { // omit header line		line := Scenario{
+		for lineIndex, line := range data {
+			if lineIndex > 0 {
 				scenarios = append(scenarios, Scenario{
 					Name:               line[0],
 					Type:               line[1],
@@ -90,6 +90,5 @@ func ParseScenariosCSV(csvFilePath string) []Scenario {
 		}
 	}
 
-	log.Print(isValidScenariosFile, scenarios)
 	return scenarios
 }
