@@ -17,8 +17,8 @@ func TestCredentialJSONMarshalling(t *testing.T) {
 
 	// Marshal the Credential to JSON
 	jsonData, err := json.Marshal(credential)
-	if err == nil {
-		errorString := FormatTestFailureString("Failed to marshal Credential", "byte array", err)
+	if err != nil {
+		errorString := FormatTestFailureString("Failed to marshal Credential", err, "byte array")
 		t.Error(errorString)
 	}
 
@@ -28,12 +28,14 @@ func TestCredentialJSONMarshalling(t *testing.T) {
 	var unmarshalledCredential Credential
 	err = json.Unmarshal(jsonData, &unmarshalledCredential)
 	if err != nil {
-		t.Fatalf("Failed to unmarshal Credential: %v", err)
+		errorString := FormatTestFailureString("Failed to unmarshal Credential", err, "error to be nil")
+		t.Error(errorString)
 	}
 
 	// Verify the unmarshalled data matches the original
 	if credential != unmarshalledCredential {
-		t.Errorf("Expected %v, got %v", credential, unmarshalledCredential)
+		errorString := FormatTestFailureString("Match unmarshalled data with original", unmarshalledCredential, credential)
+		t.Error(errorString)
 	}
 }
 
@@ -51,18 +53,22 @@ func TestScenarioJSONMarshalling(t *testing.T) {
 	// Marshal the Scenario to JSON
 	jsonData, err := json.Marshal(scenario)
 	if err != nil {
-		t.Fatalf("Failed to marshal Scenario: %v", err)
+		errorString := FormatTestFailureString("Failed to marshal Scenario", err, "byte array")
+		t.Error(errorString)
 	}
 
 	// Unmarshal the JSON back to a Scenario
 	var unmarshalledScenario Scenario
 	err = json.Unmarshal(jsonData, &unmarshalledScenario)
 	if err != nil {
-		t.Fatalf("Failed to unmarshal Scenario: %v", err)
+		errorString := FormatTestFailureString("Failed to unmarshal Scenario", err, "error to be nil")
+		t.Error(errorString)
 	}
 
 	// Verify the unmarshalled data matches the original
 	if scenario != unmarshalledScenario {
-		t.Errorf("Expected %v, got %v", scenario, unmarshalledScenario)
+		errorString := FormatTestFailureString("Match unmarshalled data with original", unmarshalledScenario, scenario)
+		t.Error(errorString)
+
 	}
 }
