@@ -22,5 +22,13 @@ func TestParseEnvVarStringToArray(t *testing.T) {
 		errorString := FormatTestFailureString("Slice Length", parsedTestStringLength, 2)
 		t.Error(errorString)
 	}
+}
 
+func TestFormatTestFailureString(t *testing.T) {
+	input := FormatTestFailureString("Test failure string", "correct", "incorrect")
+	expectedOutput := "\nxxx FAILED (Test failure string) - Got: correct, Expected: incorrect"
+	if input != expectedOutput {
+		errorString := FormatTestFailureString("Test failre string", input, expectedOutput)
+		t.Error(errorString)
+	}
 }
