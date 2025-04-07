@@ -2,6 +2,7 @@ package utils
 
 import (
 	"encoding/csv"
+	"fmt"
 	"log"
 	"net/mail"
 	"os"
@@ -9,7 +10,7 @@ import (
 	"strings"
 )
 
-func ParseScenariosCSV(csvFilePath string) []Scenario {
+func ParseScenariosCSV(csvFilePath string) ([]Scenario, error) {
 	var scenarios []Scenario
 	f, err := os.Open(csvFilePath)
 	if err != nil {
@@ -41,23 +42,28 @@ func ParseScenariosCSV(csvFilePath string) []Scenario {
 			for fieldIndex, field := range line {
 				headersMap[fieldIndex] = field
 			}
-		} else {
+		}
+
+		// Validate field data if not header (first row).
+		if lineIndex != 0 {
 			// Check that all fields contain the correct data.
 			for fieldIndex, fieldData := range line {
 				currentFieldName := headersMap[fieldIndex]
 				// Check that required fields are not empty strings.
 				if currentFieldName != "description" {
 					if fieldData == "" {
-						log.Printf("%s The \"%s\" field can not be empty.", prependErrorString, currentFieldName)
-						return scenarios
+						errorString := fmt.Errorf("%s The \"%s\" field on line/row %v can not be empty", prependErrorString, currentFieldName, lineNumber)
+						log.Print(errorString)
+						return scenarios, errorString
 					}
 				}
 				// Check email fields have a valid email address.
 				if currentFieldName == "from" || currentFieldName == "to" {
 					_, err := mail.ParseAddress(fieldData)
 					if err != nil {
-						log.Printf("%s The %s email is not valid: %v.", prependErrorString, currentFieldName, fieldData)
-						return scenarios
+						errorString := fmt.Errorf("%s The %s email on line/row %v is not valid: %v", prependErrorString, currentFieldName, lineNumber, fieldData)
+						log.Print(errorString)
+						return scenarios, errorString
 					}
 				}
 
@@ -65,8 +71,9 @@ func ParseScenariosCSV(csvFilePath string) []Scenario {
 				if currentFieldName == "credentialLocation" {
 					validCredentialLocationStrings := []string{"file", "database", "secretstore"}
 					if !slices.Contains(validCredentialLocationStrings, fieldData) {
-						log.Printf("%s Invalid credentialLocation string on line/row %v of scenarios file. Should be either one of the following values: [%v].", prependErrorString, lineNumber, strings.Join(validCredentialLocationStrings, ","))
-						return scenarios
+						errorString := fmt.Errorf("%s Invalid credentialLocation string on line/row %v of scenarios file. Should be either one of the following values: [%v]", prependErrorString, lineNumber, strings.Join(validCredentialLocationStrings, ","))
+						log.Print(errorString)
+						return scenarios, errorString
 					}
 				}
 			}
@@ -90,5 +97,5 @@ func ParseScenariosCSV(csvFilePath string) []Scenario {
 		}
 	}
 
-	return scenarios
+	return scenarios, nil
 }

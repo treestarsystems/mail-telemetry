@@ -6,11 +6,15 @@ import (
 )
 
 func TestParseScenariosCSV(t *testing.T) {
-	scenarios := ParseScenariosCSV("../test/scenarios_test.csv")
+	scenarios, err := ParseScenariosCSV("../test/scenarios_test.csv")
+	if err != nil {
+		t.Error(err)
+		return
+	}
 	varLength := len(scenarios)
 	varType := reflect.ValueOf(scenarios).Kind().String()
 	if varType != "slice" {
-		errorString := FormatTestFailureString("Var Type", varType, "slices")
+		errorString := FormatTestFailureString("Var Type", varType, "slice")
 		t.Error(errorString)
 	}
 	if varLength != 2 {

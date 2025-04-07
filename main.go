@@ -21,9 +21,6 @@ func main() {
 		log.Fatalf("error - Error loading .env file: %s", err)
 	}
 
-	// Parse scenarios.csv
-	utils.ParseScenariosCSV("./scenarios.csv")
-
 	// Connect to the databases
 	db.LoadDbConnectToSqlite()
 
@@ -31,7 +28,7 @@ func main() {
 	go tasks.InitTasks()
 
 	// Initialize cron jobs
-	cron.InitCron()
+	go cron.InitCron()
 
 	// Start webserver
 	api.StartServer()

@@ -13,7 +13,7 @@ func LoadDbSingleScenarioToSqlite(scenario utils.Scenario, tableName string) {
 	// This will rerun the connection to the database if the file does not exist.
 	fileName := fmt.Sprintf("./%v", os.Getenv("DB_SQLITE_FILENAME"))
 	if _, err := os.Stat(fileName); errors.Is(err, os.ErrNotExist) {
-		log.Printf("info - SQLite: Database file does not exist, recreating...\n")
+		log.Println("info - SQLite: Database file does not exist, recreating")
 		LoadDbConnectToSqlite()
 	}
 
@@ -34,8 +34,19 @@ func LoadDbSingleScenarioToSqlite(scenario utils.Scenario, tableName string) {
 }
 
 func LoadDbMultipleScenariosToSqlite(tableName string) {
-	scenarios := utils.ParseScenariosCSV("./scenarios.csv")
-	for _, scescenario := range scenarios {
+	log.Println("- Loading scenarios")
+	scenarios, err := utils.ParseScenariosCSV("./scenarios.csv")
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	if len(scenarios) == 0 {
+		log.Println("-- There are no scenarios to process")
+		return
+	}
+	for i, scescenario := range scenarios {
+		log.Printf("-- Scenario %v loaded to database\n", i+1)
 		LoadDbSingleScenarioToSqlite(scescenario, tableName)
 	}
+	log.Println("-- Loading scenarios, complete")
 }
