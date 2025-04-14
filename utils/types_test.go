@@ -43,8 +43,8 @@ func TestScenarioJSONMarshalling(t *testing.T) {
 	// Create a Scenario instance
 	scenario := Scenario{
 		Name:               "Test Scenario",
-		Type:               "Test Type",
-		CredentialLocation: "/path/to/credential",
+		Type:               "OF365",
+		CredentialLocation: "database",
 		FromEmail:          "from@example.com",
 		ToEmail:            "to@example.com",
 		Description:        "This is a test scenario",
