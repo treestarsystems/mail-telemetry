@@ -1,24 +1,17 @@
 package utils
 
 import (
-	"log"
+	"os"
 	"reflect"
 	"testing"
-
-	"github.com/joho/godotenv"
 )
 
 func TestParseScenariosCSV(t *testing.T) {
-	// Load environment variables
-	err := godotenv.Load(EnvFilePath)
+	err := os.Setenv("SCENARIOS_EXPECTED_FIELD_COUNT", "7")
 	if err != nil {
-		log.Fatalf("error - Error loading .env file: %s", err)
+		t.Error(err)
+		return
 	}
-	// err := os.Setenv("SCENARIOS_EXPECTED_FIELD_COUNT", "7")
-	// if err != nil {
-	// 	t.Error(err)
-	// 	return
-	// }
 	scenarios, err := ParseScenariosCSV("../test/scenarios_test.csv")
 	if err != nil {
 		t.Error(err)
