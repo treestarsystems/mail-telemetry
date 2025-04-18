@@ -14,4 +14,6 @@ type Scenario struct {
 	FromEmail          string `json:"fromEmail" binding:"required"`
 	ToEmail            string `json:"toEmail" binding:"required"`
 	Description        string `json:"description"`
+	AttachmentFilePath string `json:"attachmentFilePath"`
+	FileLastModified   string `json:"fileLastModified" binding:"required"`
 }

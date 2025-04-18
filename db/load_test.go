@@ -29,7 +29,7 @@ func setupTestDB() *gorm.DB {
 func TestLoadDbSingleScenarioToSqlite(t *testing.T) {
 	// Setup test database
 	DB = setupTestDB()
-
+	fileLastModifiedTimeString := "2025-04-18T10:08:58-04:00"
 	// Create a test scenario
 	scenario := utils.Scenario{
 		Name:               "Test Scenario",
@@ -38,10 +38,12 @@ func TestLoadDbSingleScenarioToSqlite(t *testing.T) {
 		FromEmail:          "from@example.com",
 		ToEmail:            "to@example.com",
 		Description:        "This is a test scenario",
+		AttachmentFilePath: "",
+		FileLastModified:   fileLastModifiedTimeString,
 	}
 
 	// Call the function
-	LoadDbSingleScenarioToSqlite(scenario, "scenarios")
+	LoadDbSingleScenarioToSqlite(scenario, "scenarios", fileLastModifiedTimeString)
 
 	// Verify the scenario was inserted into the database
 	var result utils.Scenario
@@ -52,7 +54,10 @@ func TestLoadDbSingleScenarioToSqlite(t *testing.T) {
 	}
 
 	// Check if the inserted scenario matches the original
-	if result.Name != scenario.Name || result.CredentialLocation != scenario.CredentialLocation || result.FromEmail != scenario.FromEmail || result.ToEmail != scenario.ToEmail || result.Description != scenario.Description {
+	if result.Name != scenario.Name || result.CredentialLocation != scenario.CredentialLocation ||
+		result.FromEmail != scenario.FromEmail || result.ToEmail != scenario.ToEmail ||
+		result.Description != scenario.Description || result.AttachmentFilePath != scenario.AttachmentFilePath ||
+		result.FileLastModified != scenario.FileLastModified {
 		errorString := utils.FormatTestFailureString("Failed to validate inserted scenario", err, "error to be nil")
 		t.Error(errorString)
 	}

@@ -24,11 +24,11 @@ func main() {
 	// Connect to the databases
 	db.LoadDbConnectToSqlite()
 
-	// Initial run of tasks on startup as a non-blocking goroutine
-	go tasks.InitTasks()
+	// Initial run of tasks on startup
+	tasks.InitTasks()
 
 	// Initialize cron jobs
-	go cron.InitCron()
+	cron.InitCron()
 
 	// Start webserver
 	api.StartServer()
