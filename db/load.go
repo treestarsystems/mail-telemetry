@@ -7,6 +7,8 @@ import (
 	"mail-telemetry/utils"
 	"os"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 func LoadDbSingleScenarioToSqlite(scenario utils.Scenario, tableName string, scenarioFileModificationTime string) {
@@ -29,24 +31,35 @@ func LoadDbSingleScenarioToSqlite(scenario utils.Scenario, tableName string, sce
 	// getFileModTime := DB.Table(tableName).Select("file_last_modified").Where(utils.Scenario{Name: scenario.Name})
 	// fmt.Print(getFileModTime)
 
-	// Save = Upsert
-	DB.Table(tableName).Where(utils.Scenario{Name: scenario.Name}).Assign(utils.Scenario{
-		Type:               scenario.Type,
-		CredentialLocation: scenario.CredentialLocation,
-		FromEmail:          scenario.FromEmail,
-		ToEmail:            scenario.ToEmail,
-		Description:        scenario.Description,
-		AttachmentFilePath: scenario.AttachmentFilePath,
-		FileLastModified:   scenario.FileLastModified,
-	}).FirstOrCreate(&utils.Scenario{
-		Type:               scenario.Type,
-		CredentialLocation: scenario.CredentialLocation,
-		FromEmail:          scenario.FromEmail,
-		ToEmail:            scenario.ToEmail,
-		Description:        scenario.Description,
-		AttachmentFilePath: scenario.AttachmentFilePath,
-		FileLastModified:   scenario.FileLastModified,
-	})
+	// Check if the scenario exists and file_last_modified is different
+	var existingScenario utils.Scenario
+	err := DB.Table(tableName).Where("name = ?", scenario.Name).First(&existingScenario).Error
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		log.Fatalf("error - SQLite: Failed to query table %s: %v", tableName, err)
+	}
+
+	fmt.Println(existingScenario)
+
+	// if existingScenario.FileLastModified != scenarioFileModificationTime {
+	// 	// Save = Upsert
+	// 	DB.Table(tableName).Where(utils.Scenario{Name: scenario.Name}).Assign(utils.Scenario{
+	// 		Type:               scenario.Type,
+	// 		CredentialLocation: scenario.CredentialLocation,
+	// 		FromEmail:          scenario.FromEmail,
+	// 		ToEmail:            scenario.ToEmail,
+	// 		Description:        scenario.Description,
+	// 		AttachmentFilePath: scenario.AttachmentFilePath,
+	// 		FileLastModified:   scenario.FileLastModified,
+	// 	}).FirstOrCreate(&utils.Scenario{
+	// 		Type:               scenario.Type,
+	// 		CredentialLocation: scenario.CredentialLocation,
+	// 		FromEmail:          scenario.FromEmail,
+	// 		ToEmail:            scenario.ToEmail,
+	// 		Description:        scenario.Description,
+	// 		AttachmentFilePath: scenario.AttachmentFilePath,
+	// 		FileLastModified:   scenario.FileLastModified,
+	// 	})
+	// }
 }
 
 func LoadDbMultipleScenariosToSqlite(tableName string) {
