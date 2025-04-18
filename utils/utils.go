@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"math/rand"
+	"os"
 	"strings"
 )
 
@@ -23,4 +24,13 @@ func ParseEnvVarStringToArray(envVarString string) []string {
 
 func FormatTestFailureString(testName string, returnedValue any, expectedValue any) string {
 	return fmt.Sprintf("\nxxx FAILED (%s) - Got: %v, Expected: %v", testName, returnedValue, expectedValue)
+}
+
+// Check if file exists
+func CheckFileExists(filePath string) bool {
+	info, err := os.Stat(filePath)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !info.IsDir()
 }

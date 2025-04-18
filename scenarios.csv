@@ -1,3 +1,3 @@
-name,type,credentialLocation,from,to,description
-"internal-external","O365","database","a@a.com","b@b.com","Mail from platform users"
-"external-internal","SMTP","file","c@c.com","a@a.com","Mail to platform users"
+name,type,credentialLocation,from,to,description,attachmentFilePath
+"internal-external","O365","database","a@a.com","b@b.com","Mail from platform users",""
+"external-internal","SMTP","file","c@c.com","a@a.com","Mail to platform users",""
