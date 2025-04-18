@@ -24,8 +24,7 @@ func LoadDbSingleScenarioToSqlite(scenario utils.Scenario, tableName string, sce
 	var existingScenario utils.Scenario
 	err := DB.Table(tableName).Where("name = ?", scenario.Name).First(&existingScenario).Error
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		// TODO: Examine and handle gracefully
-		log.Fatalf("error - SQLite: Failed to query table %s: %v", tableName, err)
+		log.Printf("info - SQLite: Failed to query table %s: %v", tableName, err)
 	}
 
 	if existingScenario.FileLastModified != scenarioFileModificationTime {
@@ -69,7 +68,7 @@ func LoadDbMultipleScenariosToSqlite(tableName string) {
 		return
 	}
 	for i, scenario := range scenarios {
-		log.Printf("-- Scenario %v loaded to database\n", i+1)
+		log.Printf("-- Scenario %v: Loading to database\n", i+1)
 		LoadDbSingleScenarioToSqlite(scenario, tableName, ScenarioFileModificationTime)
 	}
 	log.Println("-- Loading scenarios, complete")
