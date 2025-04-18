@@ -30,3 +30,6 @@ go.work.sum
 # Ignore all .bkp files
 *.bkp
 .DS_Store
+
+# Ensure Scenarios file is not committed.
+scenarios.csv
