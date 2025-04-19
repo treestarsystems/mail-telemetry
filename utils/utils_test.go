@@ -1,25 +1,41 @@
 package utils
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 )
 
 func TestRandomAplhaNumericString(t *testing.T) {
-	randomAplhaNumericString := RandomAplhaNumericString(10)
-	ransSlice := strings.Split(randomAplhaNumericString, "")
-	if len(ransSlice) != 10 {
-		errorString := FormatTestFailureString("String Length", ransSlice, 10)
+	randomAplhaNumericStringOne := RandomAplhaNumericString(10)
+	ransSliceOne := strings.Split(randomAplhaNumericStringOne, "")
+	if len(ransSliceOne) != 10 {
+		errorString := FormatTestFailureString("String Length", ransSliceOne, 10)
+		t.Error(errorString)
+	}
+
+	randomAplhaNumericStringTwo := RandomAplhaNumericString(0)
+	ransSliceTwo := strings.Split(randomAplhaNumericStringTwo, "")
+	if len(ransSliceTwo) != 1 {
+		errorString := FormatTestFailureString("String Length", ransSliceTwo, 1)
 		t.Error(errorString)
 	}
 }
 
 func TestParseEnvVarStringToArray(t *testing.T) {
-	testString := "string1, string2"
-	parsedTestString := ParseEnvVarStringToArray(testString)
-	parsedTestStringLength := len(parsedTestString)
-	if parsedTestStringLength != 2 {
-		errorString := FormatTestFailureString("Slice Length", parsedTestStringLength, 2)
+	testStringOne := "string1, string2"
+	parsedTestStringOne := ParseEnvVarStringToArray(testStringOne)
+	parsedTestStringLengthOne := len(parsedTestStringOne)
+	if parsedTestStringLengthOne != 2 {
+		errorString := FormatTestFailureString("Slice Length", parsedTestStringLengthOne, 2)
+		t.Error(errorString)
+	}
+	testStringTwo := ""
+	parsedTestStringTwo := ParseEnvVarStringToArray(testStringTwo)
+	fmt.Println(parsedTestStringTwo)
+	parsedTestStringLengthTwo := len(parsedTestStringTwo)
+	if parsedTestStringLengthTwo != 0 {
+		errorString := FormatTestFailureString("Slice Length", parsedTestStringLengthTwo, 0)
 		t.Error(errorString)
 	}
 }

@@ -13,13 +13,18 @@ import (
 	"time"
 )
 
-var expectedNumberOfFieldsPerLine *int
+var expectedNumberOfFieldsPerLine *uint64
 
 func ParseScenariosCSV(csvFilePath string) ([]Scenario, error) {
 	var scenarios []Scenario
 
+	// Validate parameters
+	if csvFilePath == "" {
+		return scenarios, errors.New("error - ParseScenariosCSV: \"csvFilePath\" parameter can not be empty")
+	}
+
 	// Expected number of fields per line/row
-	count, err := strconv.Atoi(os.Getenv("SCENARIOS_EXPECTED_FIELD_COUNT"))
+	count, err := strconv.ParseUint(os.Getenv("SCENARIOS_EXPECTED_FIELD_COUNT"), 10, 32)
 	if err != nil {
 		errorString := fmt.Sprintf("Unable to convert ENV Variable to int: %s", err)
 		return scenarios, errors.New(errorString)
@@ -128,7 +133,7 @@ func ValidateScenarioLine(headersMap map[int]string, scenarioLine []string, scen
 	prependErrorString := "malformed scenarios file."
 
 	// Check the number of fields.
-	if len(scenarioLine) != *expectedNumberOfFieldsPerLine {
+	if uint64(len(scenarioLine)) != *expectedNumberOfFieldsPerLine {
 		errorString := fmt.Sprintf("%s Incorrect number of fields on line/row %v", prependErrorString, scenarioLineNumber)
 		errorResponse = errors.New(errorString)
 		return errorResponse

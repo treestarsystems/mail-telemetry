@@ -7,15 +7,25 @@ import (
 )
 
 func TestParseScenariosCSV(t *testing.T) {
+	// Set env variable for testing
 	err := os.Setenv("SCENARIOS_EXPECTED_FIELD_COUNT", "7")
 	if err != nil {
 		t.Error(err)
 		return
 	}
+
+	// Check for empty parameter "csvFilePath"
+	_, errEmpty := ParseScenariosCSV("")
+	expectedErrorStringEmpty := "error - ParseScenariosCSV: \"csvFilePath\" parameter can not be empty"
+	if errEmpty.Error() != expectedErrorStringEmpty {
+		errorString := FormatTestFailureString("Validate Parameter Check: Empty string", expectedErrorStringEmpty, errEmpty)
+		t.Error(errorString)
+	}
+
 	scenarios, err := ParseScenariosCSV("../test/scenarios_test.csv")
 	if err != nil {
 		t.Error(err)
-		return
+		// return
 	}
 	varLength := len(scenarios)
 	varType := reflect.ValueOf(scenarios).Kind().String()
@@ -32,6 +42,35 @@ func TestParseScenariosCSV(t *testing.T) {
 		t.Error(errorString)
 	}
 
+}
+
+func TestCreateScenariosHeadersMap(t *testing.T) {
+	// Check generate headers map is correct
+	scenariosHeaderLine := []string{"name", "type", "credentialLocation", "from", "to", "description", "attachmentFilePath"}
+	expectedMap := map[int]string{
+		0: "name",
+		1: "type",
+		2: "credentialLocation",
+		3: "from",
+		4: "to",
+		5: "description",
+		6: "attachmentFilePath",
+	}
+	producedMap, err := CreateScenariosHeadersMap(scenariosHeaderLine)
+	if err != nil {
+		errorString := FormatTestFailureString("Create Header Map", err, nil)
+		t.Error(errorString)
+	}
+	// Compare the produced map with the expected map
+	checkEquality := reflect.DeepEqual(producedMap, expectedMap)
+	if checkEquality != true {
+		// errorString := FormatTestFailureString("Create Header Map", err, "map[0:name 1:type 2:credentialLocation 3:from 4:to 5:description 6:attachmentFilePath]")
+		errorString := FormatTestFailureString("Create Header Map", producedMap, expectedMap)
+		t.Error(errorString)
+	}
+}
+
+func TestValidateScenarioLine(t *testing.T) {
 	// Check generate headers map is correct
 	scenariosHeaderLine := []string{"name", "type", "credentialLocation", "from", "to", "description", "attachmentFilePath"}
 	createScenariosHeadersMap, err := CreateScenariosHeadersMap(scenariosHeaderLine)

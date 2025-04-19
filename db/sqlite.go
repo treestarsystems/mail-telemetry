@@ -2,6 +2,7 @@ package db
 
 import (
 	"log"
+	"mail-telemetry/utils"
 	"os"
 	"strings"
 
@@ -26,13 +27,13 @@ func LoadDbConnectToSqlite() {
 	// Migrate the schema/Create the tables.
 	for _, tableName := range tableNames {
 		if tableName == "scenarios" {
-			err = db.Table(tableName).AutoMigrate(&LoadDbInsertGormScenario{})
+			err = db.Table(tableName).AutoMigrate(&utils.LoadDbInsertGormScenario{})
 			if err != nil {
 				log.Printf("error - SQLite: Unable to migrate the Scenarios schema: %s\n", err)
 			}
 		}
 		if tableName == "credentials" {
-			err = db.Table(tableName).AutoMigrate(&LoadDbInsertGormCredential{})
+			err = db.Table(tableName).AutoMigrate(&utils.LoadDbInsertGormCredential{})
 			if err != nil {
 				log.Printf("error - SQLite: Unable to migrate the Credentials schema: %s\n", err)
 			}

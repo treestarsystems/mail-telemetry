@@ -1,5 +1,7 @@
 package utils
 
+import "gorm.io/gorm"
+
 type Credential struct {
 	Name         string `json:"name" binding:"required"`
 	Username     string `json:"username"`
@@ -16,4 +18,16 @@ type Scenario struct {
 	Description        string `json:"description"`
 	AttachmentFilePath string `json:"attachmentFilePath"`
 	FileLastModified   string `json:"fileLastModified" binding:"required"`
+}
+
+type LoadDbInsertGormScenario struct {
+	Scenario
+	ID        uint           `gorm:"primarykey"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+}
+
+type LoadDbInsertGormCredential struct {
+	Credential
+	ID        uint           `gorm:"primarykey"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
