@@ -11,7 +11,7 @@ func InitTasks() {
 	// scenarios, _ := db.RetrieveScenarioFromSqliteByColumnName("scenarios", "type", "O365")
 
 	// for _, scenario := range scenarios {
-	// 	_, err := email.GenerateScenarioDetailsStruct(scenario)
+	// 	_, err := email.GenerateScenarioDetails(scenario)
 	// 	if err != nil {
 	// 		log.Print(err)
 	// 	}

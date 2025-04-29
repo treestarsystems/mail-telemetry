@@ -48,7 +48,7 @@ type ScenarioAuthO365 struct {
 
 type ScenarioHostO365 struct {
 	Address  string `json:"address" binding:"required"`
-	Port     string `json:"port" binding:"required"`
+	Port     uint   `json:"port" binding:"required"`
 	Endpoint string `json:"endpoint" binding:"required"`
 }
 
@@ -56,7 +56,7 @@ type ScenarioHostO365 struct {
 type ScenarioDetailsSMTP struct {
 	Scenario Scenario         `json:"scenario" binding:"required"`
 	Auth     ScenarioAuthSMTP `json:"scenarioAuth" binding:"required"`
-	// Host     ScenarioHostSMTP `json:"scenarioHost" binding:"required"`
+	Host     ScenarioHostSMTP `json:"scenarioHost" binding:"required"`
 }
 
 type ScenarioAuthSMTP struct {
@@ -66,5 +66,5 @@ type ScenarioAuthSMTP struct {
 
 type ScenarioHostSMTP struct {
 	Address string `json:"address" binding:"required"`
-	Port    string `json:"port" binding:"required"`
+	Port    uint   `json:"port" binding:"required"`
 }

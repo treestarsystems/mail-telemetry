@@ -28,26 +28,47 @@ func GenerateScenarioAuth(scenario *utils.Scenario) (interface{}, error) {
 		}
 		return scenarioAuth, nil
 	default:
-		errorString := fmt.Sprintf("error - GenerateScenarioAuthO365: Unsupported scenario auth type(%s)", scenario.Type)
+		errorString := fmt.Sprintf("error - GenerateScenarioAuth: Unsupported scenario type(%s)", scenario.Type)
 		return nil, errors.New(errorString)
 	}
 }
 
-func GenerateScenarioDetailsStruct(scenario *utils.Scenario) (interface{}, error) {
+func GenerateScenarioHost(scenario *utils.Scenario) (interface{}, error) {
+	switch scenario.Type {
+	case "O365":
+		var scenarioHost = utils.ScenarioHostO365{
+			Address:  "",
+			Port:     0,
+			Endpoint: "",
+		}
+		return scenarioHost, nil
+	case "SMTP":
+		var scenarioHost = utils.ScenarioHostSMTP{
+			Address: "",
+			Port:    0,
+		}
+		return scenarioHost, nil
+	default:
+		errorString := fmt.Sprintf("error - GenerateScenarioHost: Unsupported scenario type(%s)", scenario.Type)
+		return nil, errors.New(errorString)
+	}
+}
+
+func GenerateScenarioDetails(scenario *utils.Scenario) (interface{}, error) {
 	switch scenario.Type {
 	case "O365":
 		scenarioAuth, err := GenerateScenarioAuth(scenario)
 		if err != nil {
 			return nil, err
 		}
-		// scenarioHost, err := GenerateScenarioHost(scenario)
-		// if err != nil {
-		// 	return nil, err
-		// }
+		scenarioHost, err := GenerateScenarioHost(scenario)
+		if err != nil {
+			return nil, err
+		}
 		var scenarioDetails = utils.ScenarioDetailsO365{
 			Scenario: *scenario,
 			Auth:     scenarioAuth.(utils.ScenarioAuthO365),
-			// Host: scenarioHost.(utils.ScenarioHostO365),
+			Host:     scenarioHost.(utils.ScenarioHostO365),
 		}
 		return scenarioDetails, nil
 	case "SMTP":
@@ -55,13 +76,19 @@ func GenerateScenarioDetailsStruct(scenario *utils.Scenario) (interface{}, error
 		if err != nil {
 			return nil, err
 		}
+		scenarioHost, err := GenerateScenarioHost(scenario)
+		if err != nil {
+			return nil, err
+		}
 		var scenarioDetails = utils.ScenarioDetailsSMTP{
 			Scenario: *scenario,
 			Auth:     scenarioAuth.(utils.ScenarioAuthSMTP),
+			Host:     scenarioHost.(utils.ScenarioHostSMTP),
 		}
 		return scenarioDetails, nil
 	default:
-		return nil, errors.New("error - GenerateScenarioDetailsStruct: Unsupported scenario type")
+		errorString := fmt.Sprintf("error - GenerateScenarioHost: Unsupported scenario type(%s)", scenario.Type)
+		return nil, errors.New(errorString)
 	}
 }
 
