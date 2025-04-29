@@ -9,6 +9,7 @@ type Credential struct {
 	ClientId     string `json:"clientId"`
 	ClientSecret string `json:"clientSecret"`
 }
+
 type Scenario struct {
 	Name               string `json:"name" binding:"required"`
 	Type               string `json:"type" binding:"required"`
@@ -30,4 +31,40 @@ type LoadDbInsertGormCredential struct {
 	Credential
 	ID        uint           `gorm:"primarykey"`
 	DeletedAt gorm.DeletedAt `gorm:"index"`
+}
+
+// ScenarioDetail Types: O365
+type ScenarioDetailsO365 struct {
+	Scenario Scenario         `json:"scenario" binding:"required"`
+	Auth     ScenarioAuthO365 `json:"scenarioAuth" binding:"required"`
+	Host     ScenarioHostO365 `json:"scenarioHost" binding:"required"`
+}
+
+type ScenarioAuthO365 struct {
+	ClientId     string `json:"clientId" binding:"required"`
+	ClientSecret string `json:"clientSecret" binding:"required"`
+	TenantId     string `json:"tenantId" binding:"required"`
+}
+
+type ScenarioHostO365 struct {
+	Address  string `json:"address" binding:"required"`
+	Port     string `json:"port" binding:"required"`
+	Endpoint string `json:"endpoint" binding:"required"`
+}
+
+// ScenarioDetail Types: SMTP
+type ScenarioDetailsSMTP struct {
+	Scenario Scenario         `json:"scenario" binding:"required"`
+	Auth     ScenarioAuthSMTP `json:"scenarioAuth" binding:"required"`
+	// Host     ScenarioHostSMTP `json:"scenarioHost" binding:"required"`
+}
+
+type ScenarioAuthSMTP struct {
+	Username string `json:"Username" binding:"required"`
+	Password string `json:"Password" binding:"required"`
+}
+
+type ScenarioHostSMTP struct {
+	Address string `json:"address" binding:"required"`
+	Port    string `json:"port" binding:"required"`
 }
