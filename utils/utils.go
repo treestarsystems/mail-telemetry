@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"encoding/json"
 	"fmt"
 	"math/rand"
 	"os"
@@ -59,4 +60,14 @@ func NullishCoalesceString(initialValue, defaultValue string) string {
 		return defaultValue
 	}
 	return initialValue
+}
+
+// PrintStructAsPrettyJSON prints a struct as a pretty-formatted JSON string.
+func PrintStructAsPrettyJSON(data interface{}) {
+	jsonData, err := json.MarshalIndent(data, "", "  ")
+	if err != nil {
+		fmt.Printf("error - Failed to marshal struct to JSON: %v\n", err)
+		return
+	}
+	fmt.Println(string(jsonData))
 }

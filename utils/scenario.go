@@ -202,6 +202,25 @@ func ValidateScenarioLine(headersMap map[int]string, scenarioLine []string, scen
 					}
 				}
 			}
+			if fieldData == "SMTP" {
+				dependentFieldNames := []string{"ports"}
+				// Check if dependent fields are empty.
+				for _, dpfn := range dependentFieldNames {
+					key, found := SearchHeadersMapValue(headersMap, dpfn)
+					// If found we need to check if empty, if not we return the errorResponse since the field is required for this scenario type.
+					if found {
+						if scenarioLine[key] == "" {
+							errorString := fmt.Sprintf("%s The \"%s\" field on line/row %v can not be empty when type is \"%s\"", prependErrorString, dpfn, scenarioLineNumber, fieldData)
+							errorResponse = errors.New(errorString)
+							return errorResponse
+						}
+					} else {
+						errorString := fmt.Sprintf("%s The \"%s\" field is required when type is \"%s\": Not Found", prependErrorString, dpfn, fieldData)
+						errorResponse = errors.New(errorString)
+						return errorResponse
+					}
+				}
+			}
 		}
 	}
 	return errorResponse
