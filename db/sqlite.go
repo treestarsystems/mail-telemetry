@@ -32,12 +32,6 @@ func LoadDbConnectToSqlite() {
 				log.Printf("error - SQLite: Unable to migrate the Scenarios schema: %s\n", err)
 			}
 		}
-		if tableName == "credentials" {
-			err = db.Table(tableName).AutoMigrate(&utils.LoadDbInsertGormCredential{})
-			if err != nil {
-				log.Printf("error - SQLite: Unable to migrate the Credentials schema: %s\n", err)
-			}
-		}
 	}
 	DB = db
 }

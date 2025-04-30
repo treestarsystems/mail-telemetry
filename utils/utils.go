@@ -52,6 +52,8 @@ func CheckFileExists(filePath string) bool {
 	return !info.IsDir()
 }
 
+// TODO: Expand this to take any type and return the a desired type...Maybe.
+// If empty string, return passed defaultValue.
 func NullishCoalesceString(initialValue, defaultValue string) string {
 	if initialValue == "" {
 		return defaultValue

@@ -8,7 +8,7 @@ import (
 
 func TestParseScenariosCSV(t *testing.T) {
 	// Set env variable for testing
-	err := os.Setenv("SCENARIOS_EXPECTED_FIELD_COUNT", "7")
+	err := os.Setenv("SCENARIOS_EXPECTED_FIELD_COUNT", "16")
 	if err != nil {
 		t.Error(err)
 		return

@@ -15,7 +15,6 @@ type Scenario struct {
 	Type                    string `json:"type" binding:"required"`
 	EnableTestVirtruEncrypt string `json:"enableTestVirtruEncrypt"`
 	EnableTestDLP           string `json:"enableTestDLP"`
-	CredentialLocation      string `json:"credentialLocation" binding:"required"`
 	FromEmail               string `json:"fromEmail" binding:"required"`
 	ToEmail                 string `json:"toEmail" binding:"required"`
 	Description             string `json:"description"`

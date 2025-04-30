@@ -46,12 +46,11 @@ func TestCredentialJSONMarshalling(t *testing.T) {
 func TestScenarioJSONMarshalling(t *testing.T) {
 	// Create a Scenario instance
 	scenario := Scenario{
-		Name:               "Test Scenario",
-		Type:               "OF365",
-		CredentialLocation: "database",
-		FromEmail:          "from@example.com",
-		ToEmail:            "to@example.com",
-		Description:        "This is a test scenario",
+		Name:        "Test Scenario",
+		Type:        "OF365",
+		FromEmail:   "from@example.com",
+		ToEmail:     "to@example.com",
+		Description: "This is a test scenario",
 	}
 
 	// Marshal the Scenario to JSON
