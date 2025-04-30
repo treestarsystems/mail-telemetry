@@ -1,3 +1,3 @@
-name,type,credentialLocation,from,to,description,attachmentFilePath,hosts,ports,endpoint,clientId,clientSecret,tenantId,username,password
-"internal-external","O365","database","a@a.com","b@b.com","Mail from platform users","./test.pdf","","","","","","","",""
-"external-internal","SMTP","file","c@c.com","a@a.com","Mail to platform users","","","","","","","","",""
+name,type,enableTestVirtruEncrypt,enableTestDLP,from,to,description,attachmentFilePath,hosts,ports,endpoints,clientId,clientSecret,tenantId,smtpUsername,smtpPassword
+"internal-external","O365","false","false","a@a.com","b@b.com","Mail from platform users","./test.pdf","https://api.example.com","","/mail","randomClientId","randomClientSecret","randomTenantId","",""
+"external-internal","SMTP","false","false","c@c.com","a@a.com","Mail to platform users","","mx.example.com","25,465,587","","","","","randomSmtpUser","randomSmtpPass"

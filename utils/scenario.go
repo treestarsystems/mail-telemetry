@@ -7,9 +7,7 @@ import (
 	"log"
 	"net/mail"
 	"os"
-	"slices"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -144,7 +142,11 @@ func ValidateScenarioLine(headersMap map[int]string, scenarioLine []string, scen
 		currentFieldName := headersMap[fieldIndex]
 
 		// Check that required fields are not empty strings.
-		if currentFieldName != "description" && currentFieldName != "attachmentFilePath" {
+		if currentFieldName != "enableTestVirtruEncrypt" && currentFieldName != "enableTestDLP" &&
+			currentFieldName != "description" && currentFieldName != "attachmentFilePath" &&
+			currentFieldName != "ports" && currentFieldName != "endpoints" && currentFieldName != "clientId" &&
+			currentFieldName != "clientSecret" && currentFieldName != "tenantId" && currentFieldName != "smtpUsername" &&
+			currentFieldName != "smtpPassword" {
 			if fieldData == "" {
 				errorString := fmt.Sprintf("%s The \"%s\" field on line/row %v can not be empty", prependErrorString, currentFieldName, scenarioLineNumber)
 				errorResponse = errors.New(errorString)
@@ -162,15 +164,37 @@ func ValidateScenarioLine(headersMap map[int]string, scenarioLine []string, scen
 			}
 		}
 
-		// Check credentialsLocation has a valid value.
-		if currentFieldName == "credentialLocation" {
-			validCredentialLocationStrings := []string{"file", "database", "secretstore"}
-			if !slices.Contains(validCredentialLocationStrings, fieldData) {
-				errorString := fmt.Sprintf("%s Invalid credentialLocation string on line/row %v of scenarios file. Should be either one of the following values: [%v]", prependErrorString, scenarioLineNumber, strings.Join(validCredentialLocationStrings, ","))
-				errorResponse = errors.New(errorString)
-				return errorResponse
+		// Check for data in interdependent fields using type field value.
+		if currentFieldName == "type" {
+			if fieldData == "O365" {
+				dependentFieldNames := []string{"clientId", "clientSecret", "tenantId"}
+				// Check if dependent fields are empty.
+				for _, dpfn := range dependentFieldNames {
+					key, found := SearchHeadersMapValue(headersMap, dpfn)
+					// If found we need to check if empty, if not we return the errorResponse since the field is required for this scenario type.
+					if found {
+						if scenarioLine[key] == "" {
+							errorString := fmt.Sprintf("%s The \"%s\" field on line/row %v can not be empty when type is \"%s\"", prependErrorString, dpfn, scenarioLineNumber, fieldData)
+							errorResponse = errors.New(errorString)
+							return errorResponse
+						}
+					} else {
+						errorString := fmt.Sprintf("%s The \"%s\" field is required when type is \"%s\": Not Found", prependErrorString, dpfn, fieldData)
+						errorResponse = errors.New(errorString)
+						return errorResponse
+					}
+				}
 			}
 		}
 	}
 	return errorResponse
+}
+
+func SearchHeadersMapValue(headersMap map[int]string, headerString string) (int, bool) {
+	for key, value := range headersMap {
+		if value == headerString {
+			return key, true
+		}
+	}
+	return -1, false
 }
