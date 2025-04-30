@@ -11,14 +11,24 @@ type Credential struct {
 }
 
 type Scenario struct {
-	Name               string `json:"name" binding:"required"`
-	Type               string `json:"type" binding:"required"`
-	CredentialLocation string `json:"credentialLocation" binding:"required"`
-	FromEmail          string `json:"fromEmail" binding:"required"`
-	ToEmail            string `json:"toEmail" binding:"required"`
-	Description        string `json:"description"`
-	AttachmentFilePath string `json:"attachmentFilePath"`
-	FileLastModified   string `json:"fileLastModified" binding:"required"`
+	Name                    string `json:"name" binding:"required"`
+	Type                    string `json:"type" binding:"required"`
+	EnableTestVirtruEncrypt string `json:"enableTestVirtruEncrypt"`
+	EnableTestDLP           string `json:"enableTestDLP"`
+	CredentialLocation      string `json:"credentialLocation" binding:"required"`
+	FromEmail               string `json:"fromEmail" binding:"required"`
+	ToEmail                 string `json:"toEmail" binding:"required"`
+	Description             string `json:"description"`
+	AttachmentFilePath      string `json:"attachmentFilePath"`
+	Hosts                   string `json:"hosts"`
+	Ports                   string `json:"ports"`
+	Endpoints               string `json:"endpoints"`
+	ClientId                string `json:"clientId"`
+	ClientSecret            string `json:"clientSecret"`
+	TenantId                string `json:"tenantId"`
+	SmtpUsername            string `json:"smtpUsername"`
+	SmtpPassword            string `json:"smtpPassword"`
+	FileLastModified        string `json:"fileLastModified" binding:"required"`
 }
 
 type LoadDbInsertGormScenario struct {

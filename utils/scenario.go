@@ -91,14 +91,23 @@ func ParseScenariosCSV(csvFilePath string) ([]Scenario, error) {
 		for lineIndex, line := range data {
 			if lineIndex > 0 {
 				scenarios = append(scenarios, Scenario{
-					Name:               line[0],
-					Type:               line[1],
-					CredentialLocation: line[2],
-					FromEmail:          line[3],
-					ToEmail:            line[4],
-					Description:        line[5],
-					AttachmentFilePath: line[6],
-					FileLastModified:   csvFileInfo.ModTime().Format(time.RFC3339),
+					Name:                    line[0],
+					Type:                    line[1],
+					EnableTestVirtruEncrypt: NullishCoalesceString(line[2], "false"),
+					EnableTestDLP:           NullishCoalesceString(line[3], "false"),
+					FromEmail:               line[4],
+					ToEmail:                 line[5],
+					Description:             line[6],
+					AttachmentFilePath:      line[7],
+					Hosts:                   line[8],
+					Ports:                   line[9],
+					Endpoints:               line[10],
+					ClientId:                line[11],
+					ClientSecret:            line[12],
+					TenantId:                line[13],
+					SmtpUsername:            line[14],
+					SmtpPassword:            line[15],
+					FileLastModified:        csvFileInfo.ModTime().Format(time.RFC3339),
 				})
 			}
 		}
@@ -120,7 +129,15 @@ func CreateScenariosHeadersMap(headersLine []string) (map[int]string, error) {
 		return headersMap, errors.New("error - Empty map")
 	}
 	return headersMap, nil
+}
 
+func SearchHeadersMapValue(headersMap map[int]string, headerString string) (int, bool) {
+	for key, value := range headersMap {
+		if value == headerString {
+			return key, true
+		}
+	}
+	return -1, false
 }
 
 // This validation line will invalidate the WHOLE file if one row is malformed/incorrect.
@@ -188,13 +205,4 @@ func ValidateScenarioLine(headersMap map[int]string, scenarioLine []string, scen
 		}
 	}
 	return errorResponse
-}
-
-func SearchHeadersMapValue(headersMap map[int]string, headerString string) (int, bool) {
-	for key, value := range headersMap {
-		if value == headerString {
-			return key, true
-		}
-	}
-	return -1, false
 }

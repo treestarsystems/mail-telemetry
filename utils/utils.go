@@ -51,3 +51,10 @@ func CheckFileExists(filePath string) bool {
 	}
 	return !info.IsDir()
 }
+
+func NullishCoalesceString(initialValue, defaultValue string) string {
+	if initialValue == "" {
+		return defaultValue
+	}
+	return initialValue
+}
