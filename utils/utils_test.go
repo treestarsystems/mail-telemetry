@@ -22,16 +22,16 @@ func TestRandomAplhaNumericString(t *testing.T) {
 	}
 }
 
-func TestParseEnvVarStringToArray(t *testing.T) {
+func TestParseCommaSeparatedStringToSlice(t *testing.T) {
 	testStringOne := "string1, string2"
-	parsedTestStringOne := ParseEnvVarStringToArray(testStringOne)
+	parsedTestStringOne := ParseCommaSeparatedStringToSlice(testStringOne)
 	parsedTestStringLengthOne := len(parsedTestStringOne)
 	if parsedTestStringLengthOne != 2 {
 		errorString := FormatTestFailureString("Slice Length", parsedTestStringLengthOne, 2)
 		t.Error(errorString)
 	}
 	testStringTwo := ""
-	parsedTestStringTwo := ParseEnvVarStringToArray(testStringTwo)
+	parsedTestStringTwo := ParseCommaSeparatedStringToSlice(testStringTwo)
 	fmt.Println(parsedTestStringTwo)
 	parsedTestStringLengthTwo := len(parsedTestStringTwo)
 	if parsedTestStringLengthTwo != 0 {

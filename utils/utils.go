@@ -28,12 +28,20 @@ func RandomAplhaNumericString(length uint) string {
 	return string(b)
 }
 
-func ParseEnvVarStringToArray(envVarString string) []string {
+func ParseCommaSeparatedStringToSlice(envVarString string) []string {
+	var resultSlice []string
 	// Validate parameters
 	if envVarString == "" {
 		return []string{}
 	}
-	return strings.Split(envVarString, ",")
+
+	for _, item := range strings.Split(envVarString, ",") {
+		// Filter out empty strings.
+		if item != "" {
+			resultSlice = append(resultSlice, item)
+		}
+	}
+	return resultSlice
 }
 
 func FormatTestFailureString(testName string, returnedValue any, expectedValue any) string {
@@ -70,4 +78,21 @@ func PrintStructAsPrettyJSON(data interface{}) {
 		return
 	}
 	fmt.Println(string(jsonData))
+}
+
+func CombineTwoStringSlices(sliceOne, sliceTwo []string, joiningString string) []string {
+	var resultSlce []string
+
+	// If the second slice is empty, just return the first slice.
+	if len(sliceTwo) == 0 {
+		return sliceOne
+	}
+
+	for _, sliceOneItem := range sliceOne {
+		for _, sliceTwoItem := range sliceTwo {
+			resultSlce = append(resultSlce, sliceOneItem+joiningString+sliceTwoItem)
+		}
+	}
+
+	return resultSlce
 }
