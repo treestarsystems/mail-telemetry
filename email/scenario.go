@@ -154,6 +154,7 @@ func GenerateScenarioInstance(scenario *utils.Scenario) []interface{} {
 				Scenario: *scenario,
 				Auth:     scenarioAuth.(utils.ScenarioAuthO365),
 				Host:     instanceHostDetails.(utils.ScenarioHostO365),
+				Message:  GenerateScenarioMessage(scenario, instanceHostDetails.(utils.ScenarioHostO365).Instance),
 				Errors:   errorMessages,
 			}
 
@@ -175,6 +176,7 @@ func GenerateScenarioInstance(scenario *utils.Scenario) []interface{} {
 				Scenario: *scenario,
 				Auth:     scenarioAuth.(utils.ScenarioAuthSMTP),
 				Host:     instanceHostDetails.(utils.ScenarioHostSMTP),
+				Message:  GenerateScenarioMessage(scenario, instanceHostDetails.(utils.ScenarioHostSMTP).Instance),
 				Errors:   errorMessages,
 			}
 
