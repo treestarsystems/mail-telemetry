@@ -47,6 +47,7 @@ type ScenarioDetailsO365 struct {
 	Scenario Scenario         `json:"scenario" binding:"required"`
 	Auth     ScenarioAuthO365 `json:"scenarioAuth" binding:"required"`
 	Host     ScenarioHostO365 `json:"scenarioHost" binding:"required"`
+	Message  ScenarioMessage  `json:"scenarioMessage" binding:"required"`
 	Errors   []string         `json:"errors" binding:"required"`
 }
 
@@ -68,6 +69,7 @@ type ScenarioDetailsSMTP struct {
 	Scenario Scenario         `json:"scenario" binding:"required"`
 	Auth     ScenarioAuthSMTP `json:"scenarioAuth" binding:"required"`
 	Host     ScenarioHostSMTP `json:"scenarioHost" binding:"required"`
+	Message  ScenarioMessage  `json:"scenarioMessage" binding:"required"`
 	Errors   []string         `json:"errors" binding:"required"`
 }
 
@@ -80,4 +82,12 @@ type ScenarioHostSMTP struct {
 	Instance  string   `json:"instance" binding:"required"`
 	Addresses []string `json:"addresses" binding:"required"`
 	Ports     []string `json:"ports" binding:"required"`
+}
+
+// Scenario Detail Message
+type ScenarioMessage struct {
+	ID            string `json:"id" binding:"required"`
+	Subject       string `json:"subject" binding:"required"`
+	BodyPlainText string `json:"bodyPlainText" binding:"required"`
+	BodyHTML      string `json:"bodyHtml" binding:"required"`
 }
