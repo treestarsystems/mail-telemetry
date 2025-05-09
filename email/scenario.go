@@ -28,7 +28,7 @@ func ConvertEmailToPlusAddress(emailStringSlice []string, appName, messageId str
 	return modifiedEmails
 }
 
-// GenerateCustomTimestampString generates a string in the format HH:MM:SS_MM-DD-YYYY.
+// GenerateCustomTimestampString generates a string in the format HH:MM:SS_MM-DD-YYYY(TimeZone).
 func GenerateCustomTimestampString() string {
 	/* Help:
 	- https://www.golinuxcloud.com/golang-time-format/
