@@ -56,6 +56,7 @@ func GenerateMessageBodies(scenario *utils.Scenario, scenarioHostInstance, messa
 	Attachment: %s
 	Host Instance URI: %s
 	Origin Hostname: %s
+	Origin Host IP: %s
 	Message ID: %s`
 
 	messageBodyHtmlTemplate := `<html><body>
@@ -67,15 +68,16 @@ func GenerateMessageBodies(scenario *utils.Scenario, scenarioHostInstance, messa
 	<b>Attachment:</b> %s</br>
 	<b>Host Instance URI:</b> %s</br>
 	<b>Origin Hostname:</b> %s</br>
+	<b>Origin Host IP:</b> %s</br>
 	<b>Message ID:</b> %s</br>
 	</body></html>`
 
 	messageBodyTextPlain = fmt.Sprintf(messageBodyTextPlainTemplate, scenario.Name,
 		scenario.Type, scenario.EnableTestVirtruEncrypt, scenario.EnableTestDLP,
-		scenario.Description, scenario.AttachmentFilePath, scenarioHostInstance, utils.SystemHostName, messageId)
+		scenario.Description, scenario.AttachmentFilePath, scenarioHostInstance, utils.SystemHostName, utils.SystemLocalIpAddress, messageId)
 	messageBodyHtml = fmt.Sprintf(messageBodyHtmlTemplate, scenario.Name,
 		scenario.Type, scenario.EnableTestVirtruEncrypt, scenario.EnableTestDLP,
-		scenario.Description, scenario.AttachmentFilePath, scenarioHostInstance, utils.SystemHostName, messageId)
+		scenario.Description, scenario.AttachmentFilePath, scenarioHostInstance, utils.SystemHostName, utils.SystemLocalIpAddress, messageId)
 
 	return messageBodyTextPlain, messageBodyHtml
 }
@@ -140,8 +142,10 @@ func GenerateScenarioHost(scenario *utils.Scenario) ([]interface{}, error) {
 
 func GenerateScenarioMessage(scenario *utils.Scenario, scenarioHostInstance string) utils.ScenarioMessage {
 	messageId := utils.RandomAplhaNumericString(20)
+	// Convert email list to slices
 	fromEmailsToSlice := utils.ConvertCommaSeparatedStringToSlice(scenario.FromEmails)
 	toEmailsToSlice := utils.ConvertCommaSeparatedStringToSlice(scenario.ToEmails)
+	// Modify email list slice for use. <App Name: Message ID(20 chars)>email+<MessageID>@example.com
 	fromEmailList := ConvertEmailToPlusAddress(fromEmailsToSlice, utils.AppName, messageId)
 	toEmailList := ConvertEmailToPlusAddress(toEmailsToSlice, utils.AppName, messageId)
 	subject := GenerateScenarioSubjectString(messageId)

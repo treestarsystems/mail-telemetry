@@ -1,7 +1,6 @@
 package tasks
 
 import (
-	"fmt"
 	"mail-telemetry/db"
 	"mail-telemetry/email"
 	"mail-telemetry/utils"
@@ -43,7 +42,7 @@ func InitTasks() {
 	// testEmails := []string{"asdf@adsfsd.com"}
 	// fmt.Println(email.ConvertEmailToPlusAddress(testEmails, utils.AppName, utils.RandomAplhaNumericString(20)))
 
-	fmt.Println(utils.AppName)
-	fmt.Println(utils.SystemHostName)
-	fmt.Println(utils.SystemLocalIpAddress)
+	// fmt.Println(utils.AppName)
+	// fmt.Println(utils.SystemHostName)
+	// fmt.Println(utils.SystemLocalIpAddress)
 }
