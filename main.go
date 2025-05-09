@@ -7,6 +7,7 @@ import (
 	"mail-telemetry/db"
 	"mail-telemetry/tasks"
 	"mail-telemetry/utils"
+	"os"
 
 	"github.com/joho/godotenv"
 )
@@ -20,6 +21,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("error - Error loading .env file: %s", err)
 	}
+
+	// Set App Name, Hostname, and Preferred Local IP that this app uses.
+	utils.AppName = os.Getenv("APP_NAME")
+	utils.SystemHostName = utils.GetHostName(utils.AppName)
+	utils.SystemLocalIpAddress = utils.GetPreferredLocalOutboundIP()
 
 	// Connect to the databases
 	db.LoadDbConnectToSqlite()

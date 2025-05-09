@@ -15,8 +15,8 @@ type Scenario struct {
 	Type                    string `json:"type" binding:"required"`
 	EnableTestVirtruEncrypt string `json:"enableTestVirtruEncrypt"`
 	EnableTestDLP           string `json:"enableTestDLP"`
-	FromEmail               string `json:"fromEmail" binding:"required"`
-	ToEmail                 string `json:"toEmail" binding:"required"`
+	FromEmails              string `json:"fromEmails" binding:"required"`
+	ToEmails                string `json:"toEmails" binding:"required"`
 	Description             string `json:"description"`
 	AttachmentFilePath      string `json:"attachmentFilePath"`
 	Hosts                   string `json:"hosts"`
@@ -58,10 +58,7 @@ type ScenarioAuthO365 struct {
 }
 
 type ScenarioHostO365 struct {
-	Instance  string   `json:"instance" binding:"required"`
-	Addresses []string `json:"addresses" binding:"required"`
-	Ports     []string `json:"ports" binding:"required"`
-	Endpoints []string `json:"endpoints" binding:"required"`
+	InstanceURI string `json:"instanceUri" binding:"required"`
 }
 
 // ScenarioDetail Types: SMTP
@@ -79,15 +76,15 @@ type ScenarioAuthSMTP struct {
 }
 
 type ScenarioHostSMTP struct {
-	Instance  string   `json:"instance" binding:"required"`
-	Addresses []string `json:"addresses" binding:"required"`
-	Ports     []string `json:"ports" binding:"required"`
+	InstanceURI string `json:"instanceUri" binding:"required"`
 }
 
 // Scenario Detail Message
 type ScenarioMessage struct {
-	ID            string `json:"id" binding:"required"`
-	Subject       string `json:"subject" binding:"required"`
-	BodyPlainText string `json:"bodyPlainText" binding:"required"`
-	BodyHTML      string `json:"bodyHtml" binding:"required"`
+	ID            string   `json:"id" binding:"required"`
+	FromEmails    []string `json:"fromEmails" binding:"required"`
+	ToEmails      []string `json:"toEmails" binding:"required"`
+	Subject       string   `json:"subject" binding:"required"`
+	BodyPlainText string   `json:"bodyPlainText" binding:"required"`
+	BodyHTML      string   `json:"bodyHtml" binding:"required"`
 }

@@ -22,7 +22,7 @@ func InitTasks() {
 			scenarioCount++
 		}
 	}
-	fmt.Println(scenarioCount)
+	// fmt.Println(scenarioCount)
 
 	// TODO: write all scenario instances to it's own table with a MD5 hash of the struct.
 	// GenerateMD5HashOfStruct generates an MD5 hash of a given struct.
@@ -39,4 +39,11 @@ func InitTasks() {
 	//	}
 
 	// fmt.Println(email.GenerateScenarioSubjectString(utils.RandomAplhaNumericString(20)))
+
+	// testEmails := []string{"asdf@adsfsd.com"}
+	// fmt.Println(email.ConvertEmailToPlusAddress(testEmails, utils.AppName, utils.RandomAplhaNumericString(20)))
+
+	fmt.Println(utils.AppName)
+	fmt.Println(utils.SystemHostName)
+	fmt.Println(utils.SystemLocalIpAddress)
 }

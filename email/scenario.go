@@ -5,8 +5,28 @@ import (
 	"fmt"
 	"log"
 	"mail-telemetry/utils"
+	"strings"
 	"time"
 )
+
+func ConvertEmailToPlusAddress(emailStringSlice []string, appName, messageId string) []string {
+	var modifiedEmails []string
+
+	for _, emailString := range emailStringSlice {
+		// Split the email into local part and domain
+		parts := strings.Split(emailString, "@")
+		if len(parts) == 2 {
+			// Add the messageId to the local part using a "+" address
+			modifiedEmail := fmt.Sprintf("<%s: %s>%s+%s@%s", appName, messageId, parts[0], messageId, parts[1])
+			modifiedEmails = append(modifiedEmails, modifiedEmail)
+		} else {
+			// If the email is invalid, keep it unchanged
+			modifiedEmails = append(modifiedEmails, emailString)
+		}
+	}
+
+	return modifiedEmails
+}
 
 // GenerateCustomTimestampString generates a string in the format HH:MM:SS_MM-DD-YYYY.
 func GenerateCustomTimestampString() string {
@@ -34,7 +54,8 @@ func GenerateMessageBodies(scenario *utils.Scenario, scenarioHostInstance, messa
 	DLP: %s
 	Description: %s
 	Attachment: %s
-	Host URI: %s
+	Host Instance URI: %s
+	Origin Hostname: %s
 	Message ID: %s`
 
 	messageBodyHtmlTemplate := `<html><body>
@@ -44,16 +65,17 @@ func GenerateMessageBodies(scenario *utils.Scenario, scenarioHostInstance, messa
 	<b>DLP:</b> %s</br>
 	<b>Description:</b> %s</br>
 	<b>Attachment:</b> %s</br>
-	<b>Host URI:</b> %s</br>
+	<b>Host Instance URI:</b> %s</br>
+	<b>Origin Hostname:</b> %s</br>
 	<b>Message ID:</b> %s</br>
 	</body></html>`
 
 	messageBodyTextPlain = fmt.Sprintf(messageBodyTextPlainTemplate, scenario.Name,
 		scenario.Type, scenario.EnableTestVirtruEncrypt, scenario.EnableTestDLP,
-		scenario.Description, scenario.AttachmentFilePath, scenarioHostInstance, messageId)
+		scenario.Description, scenario.AttachmentFilePath, scenarioHostInstance, utils.SystemHostName, messageId)
 	messageBodyHtml = fmt.Sprintf(messageBodyHtmlTemplate, scenario.Name,
 		scenario.Type, scenario.EnableTestVirtruEncrypt, scenario.EnableTestDLP,
-		scenario.Description, scenario.AttachmentFilePath, scenarioHostInstance, messageId)
+		scenario.Description, scenario.AttachmentFilePath, scenarioHostInstance, utils.SystemHostName, messageId)
 
 	return messageBodyTextPlain, messageBodyHtml
 }
@@ -83,9 +105,9 @@ func GenerateScenarioHost(scenario *utils.Scenario) ([]interface{}, error) {
 	var scenarioHostInstances []interface{}
 
 	// Create slices for hosts,ports, and endpoints.
-	hosts := utils.ParseCommaSeparatedStringToSlice(scenario.Hosts)
-	ports := utils.ParseCommaSeparatedStringToSlice(scenario.Ports)
-	endpoints := utils.ParseCommaSeparatedStringToSlice(scenario.Endpoints)
+	hosts := utils.ConvertCommaSeparatedStringToSlice(scenario.Hosts)
+	ports := utils.ConvertCommaSeparatedStringToSlice(scenario.Ports)
+	endpoints := utils.ConvertCommaSeparatedStringToSlice(scenario.Endpoints)
 
 	// Combine slices for host addresses.
 	hostAddressesWithPort := utils.CombineTwoStringSlices(hosts, ports, ":")
@@ -96,10 +118,7 @@ func GenerateScenarioHost(scenario *utils.Scenario) ([]interface{}, error) {
 
 		for _, uri := range hostFullUris {
 			var scenarioHostInstanceSingle = utils.ScenarioHostO365{
-				Instance:  uri,
-				Addresses: hosts,
-				Ports:     ports,
-				Endpoints: endpoints,
+				InstanceURI: uri,
 			}
 			scenarioHostInstances = append(scenarioHostInstances, scenarioHostInstanceSingle)
 		}
@@ -107,9 +126,7 @@ func GenerateScenarioHost(scenario *utils.Scenario) ([]interface{}, error) {
 	case "SMTP":
 		for _, uri := range hostAddressesWithPort {
 			var scenarioHostInstanceSingle = utils.ScenarioHostSMTP{
-				Instance:  uri,
-				Addresses: hosts,
-				Ports:     ports,
+				InstanceURI: uri,
 			}
 			scenarioHostInstances = append(scenarioHostInstances, scenarioHostInstanceSingle)
 		}
@@ -122,12 +139,18 @@ func GenerateScenarioHost(scenario *utils.Scenario) ([]interface{}, error) {
 }
 
 func GenerateScenarioMessage(scenario *utils.Scenario, scenarioHostInstance string) utils.ScenarioMessage {
-	// Subject template: Template: HH:MM:SS_MM-DD-YYYY_Telemetry_<20 char ID string>
 	messageId := utils.RandomAplhaNumericString(20)
+	fromEmailsToSlice := utils.ConvertCommaSeparatedStringToSlice(scenario.FromEmails)
+	toEmailsToSlice := utils.ConvertCommaSeparatedStringToSlice(scenario.ToEmails)
+	fromEmailList := ConvertEmailToPlusAddress(fromEmailsToSlice, utils.AppName, messageId)
+	toEmailList := ConvertEmailToPlusAddress(toEmailsToSlice, utils.AppName, messageId)
 	subject := GenerateScenarioSubjectString(messageId)
 	bodyPlainText, bodyHtml := GenerateMessageBodies(scenario, scenarioHostInstance, messageId)
+
 	return utils.ScenarioMessage{
 		ID:            messageId,
+		FromEmails:    fromEmailList,
+		ToEmails:      toEmailList,
 		Subject:       subject,
 		BodyPlainText: bodyPlainText,
 		BodyHTML:      bodyHtml,
@@ -154,7 +177,7 @@ func GenerateScenarioInstance(scenario *utils.Scenario) []interface{} {
 				Scenario: *scenario,
 				Auth:     scenarioAuth.(utils.ScenarioAuthO365),
 				Host:     instanceHostDetails.(utils.ScenarioHostO365),
-				Message:  GenerateScenarioMessage(scenario, instanceHostDetails.(utils.ScenarioHostO365).Instance),
+				Message:  GenerateScenarioMessage(scenario, instanceHostDetails.(utils.ScenarioHostO365).InstanceURI),
 				Errors:   errorMessages,
 			}
 
@@ -176,7 +199,7 @@ func GenerateScenarioInstance(scenario *utils.Scenario) []interface{} {
 				Scenario: *scenario,
 				Auth:     scenarioAuth.(utils.ScenarioAuthSMTP),
 				Host:     instanceHostDetails.(utils.ScenarioHostSMTP),
-				Message:  GenerateScenarioMessage(scenario, instanceHostDetails.(utils.ScenarioHostSMTP).Instance),
+				Message:  GenerateScenarioMessage(scenario, instanceHostDetails.(utils.ScenarioHostSMTP).InstanceURI),
 				Errors:   errorMessages,
 			}
 

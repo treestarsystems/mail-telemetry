@@ -3,12 +3,18 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"math/rand"
+	"net"
 	"os"
 	"strings"
 )
 
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+var SystemHostName string
+var SystemLocalIpAddress string
+var AppName string
 
 // RandomString generates a random string of the specified length.
 func RandomAplhaNumericString(length uint) string {
@@ -28,14 +34,14 @@ func RandomAplhaNumericString(length uint) string {
 	return string(b)
 }
 
-func ParseCommaSeparatedStringToSlice(envVarString string) []string {
+func ConvertCommaSeparatedStringToSlice(csvString string) []string {
 	var resultSlice []string
 	// Validate parameters
-	if envVarString == "" {
+	if csvString == "" {
 		return []string{}
 	}
 
-	for _, item := range strings.Split(envVarString, ",") {
+	for _, item := range strings.Split(csvString, ",") {
 		// Filter out empty strings.
 		if item != "" {
 			resultSlice = append(resultSlice, item)
@@ -95,4 +101,24 @@ func CombineTwoStringSlices(sliceOne, sliceTwo []string, joiningString string) [
 	}
 
 	return resultSlce
+}
+
+// Get hostname or return default value.
+func GetHostName(appName string) string {
+	hostname, err := os.Hostname()
+	if err != nil {
+		SystemHostName = fmt.Sprintf("Uknown hostname for app: %s", appName)
+	}
+	return hostname
+}
+
+// Get preferred outbound ip of this machine
+func GetPreferredLocalOutboundIP() string {
+	// Source: https://stackoverflow.com/a/37382208
+	conn, err := net.Dial("udp", "8.8.8.8:80")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer conn.Close()
+	return conn.LocalAddr().(*net.UDPAddr).IP.String()
 }
