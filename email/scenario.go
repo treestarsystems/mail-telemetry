@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+// Modify email list slice for use. <App Name: Message ID(20 chars)>email+<MessageID>@example.com
 func ConvertEmailToPlusAddress(emailStringSlice []string, appName, messageId string) []string {
 	var modifiedEmails []string
 
@@ -55,7 +56,7 @@ func GenerateMessageBodies(scenario *utils.Scenario, scenarioHostInstance, messa
 	Description: %s
 	Attachment: %s
 	Host Instance URI: %s
-	Origin Hostname: %s
+	Origin Host Name: %s
 	Origin Host IP: %s
 	Message ID: %s`
 
@@ -67,7 +68,7 @@ func GenerateMessageBodies(scenario *utils.Scenario, scenarioHostInstance, messa
 	<b>Description:</b> %s</br>
 	<b>Attachment:</b> %s</br>
 	<b>Host Instance URI:</b> %s</br>
-	<b>Origin Hostname:</b> %s</br>
+	<b>Origin Host Name:</b> %s</br>
 	<b>Origin Host IP:</b> %s</br>
 	<b>Message ID:</b> %s</br>
 	</body></html>`
@@ -106,6 +107,11 @@ func GenerateScenarioAuth(scenario *utils.Scenario) (interface{}, error) {
 func GenerateScenarioHost(scenario *utils.Scenario) ([]interface{}, error) {
 	var scenarioHostInstances []interface{}
 
+	// This info will be the same for all instances.
+	var scenarioHostInstanceSingle = utils.ScenarioHost{
+		OriginHostName:       utils.SystemHostName,
+		OriginLocalIpAddress: utils.SystemLocalIpAddress,
+	}
 	// Create slices for hosts,ports, and endpoints.
 	hosts := utils.ConvertCommaSeparatedStringToSlice(scenario.Hosts)
 	ports := utils.ConvertCommaSeparatedStringToSlice(scenario.Ports)
@@ -119,25 +125,21 @@ func GenerateScenarioHost(scenario *utils.Scenario) ([]interface{}, error) {
 		hostFullUris := utils.CombineTwoStringSlices(hostAddressesWithPort, endpoints, "")
 
 		for _, uri := range hostFullUris {
-			var scenarioHostInstanceSingle = utils.ScenarioHostO365{
-				InstanceURI: uri,
-			}
+			scenarioHostInstanceSingle.InstanceURI = uri
 			scenarioHostInstances = append(scenarioHostInstances, scenarioHostInstanceSingle)
 		}
-		return scenarioHostInstances, nil
 	case "SMTP":
 		for _, uri := range hostAddressesWithPort {
-			var scenarioHostInstanceSingle = utils.ScenarioHostSMTP{
-				InstanceURI: uri,
-			}
+			scenarioHostInstanceSingle.InstanceURI = uri
 			scenarioHostInstances = append(scenarioHostInstances, scenarioHostInstanceSingle)
 		}
-		return scenarioHostInstances, nil
 	default:
 		errorString := fmt.Sprintf("error - GenerateScenarioHost: Unsupported scenario type(%s)", scenario.Type)
 		// TODO: I think this should return an empty struct or something better. Like a struct with defaulted values...Wait that doesnt make sense since there might be two types returned.
 		return nil, errors.New(errorString)
 	}
+
+	return scenarioHostInstances, nil
 }
 
 func GenerateScenarioMessage(scenario *utils.Scenario, scenarioHostInstance string) utils.ScenarioMessage {
@@ -180,8 +182,8 @@ func GenerateScenarioInstance(scenario *utils.Scenario) []interface{} {
 			scenarioInstanceDetails := utils.ScenarioDetailsO365{
 				Scenario: *scenario,
 				Auth:     scenarioAuth.(utils.ScenarioAuthO365),
-				Host:     instanceHostDetails.(utils.ScenarioHostO365),
-				Message:  GenerateScenarioMessage(scenario, instanceHostDetails.(utils.ScenarioHostO365).InstanceURI),
+				Host:     instanceHostDetails.(utils.ScenarioHost),
+				Message:  GenerateScenarioMessage(scenario, instanceHostDetails.(utils.ScenarioHost).InstanceURI),
 				Errors:   errorMessages,
 			}
 
@@ -202,8 +204,8 @@ func GenerateScenarioInstance(scenario *utils.Scenario) []interface{} {
 			scenarioInstanceDetails := utils.ScenarioDetailsSMTP{
 				Scenario: *scenario,
 				Auth:     scenarioAuth.(utils.ScenarioAuthSMTP),
-				Host:     instanceHostDetails.(utils.ScenarioHostSMTP),
-				Message:  GenerateScenarioMessage(scenario, instanceHostDetails.(utils.ScenarioHostSMTP).InstanceURI),
+				Host:     instanceHostDetails.(utils.ScenarioHost),
+				Message:  GenerateScenarioMessage(scenario, instanceHostDetails.(utils.ScenarioHost).InstanceURI),
 				Errors:   errorMessages,
 			}
 
