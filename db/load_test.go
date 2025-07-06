@@ -34,9 +34,8 @@ func TestLoadDbSingleScenarioToSqlite(t *testing.T) {
 	scenario := utils.Scenario{
 		Name:               "Test Scenario",
 		Type:               "OF365",
-		CredentialLocation: "database",
-		FromEmail:          "from@example.com",
-		ToEmail:            "to@example.com",
+		FromEmails:         "from@example.com",
+		ToEmails:           "to@example.com",
 		Description:        "This is a test scenario",
 		AttachmentFilePath: "",
 		FileLastModified:   fileLastModifiedTimeString,
@@ -54,8 +53,7 @@ func TestLoadDbSingleScenarioToSqlite(t *testing.T) {
 	}
 
 	// Check if the inserted scenario matches the original
-	if result.Name != scenario.Name || result.CredentialLocation != scenario.CredentialLocation ||
-		result.FromEmail != scenario.FromEmail || result.ToEmail != scenario.ToEmail ||
+	if result.Name != scenario.Name || result.FromEmails != scenario.FromEmails || result.ToEmails != scenario.ToEmails ||
 		result.Description != scenario.Description || result.AttachmentFilePath != scenario.AttachmentFilePath ||
 		result.FileLastModified != scenario.FileLastModified {
 		errorString := utils.FormatTestFailureString("Failed to validate inserted scenario", err, "error to be nil")

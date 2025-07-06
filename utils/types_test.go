@@ -48,8 +48,8 @@ func TestScenarioJSONMarshalling(t *testing.T) {
 	scenario := Scenario{
 		Name:        "Test Scenario",
 		Type:        "OF365",
-		FromEmail:   "from@example.com",
-		ToEmail:     "to@example.com",
+		FromEmails:  "from@example.com",
+		ToEmails:    "to@example.com",
 		Description: "This is a test scenario",
 	}
 
