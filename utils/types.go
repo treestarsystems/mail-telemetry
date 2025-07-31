@@ -24,6 +24,7 @@ type Scenario struct {
 	Endpoints               string `json:"endpoints"`
 	ClientId                string `json:"clientId"`
 	ClientSecret            string `json:"clientSecret"`
+	ClientSecretId          string `json:"clientSecretId"`
 	TenantId                string `json:"tenantId"`
 	SmtpUsername            string `json:"smtpUsername"`
 	SmtpPassword            string `json:"smtpPassword"`
@@ -85,4 +86,15 @@ type ScenarioMessage struct {
 	Subject       string   `json:"subject" binding:"required"`
 	BodyPlainText string   `json:"bodyPlainText" binding:"required"`
 	BodyHTML      string   `json:"bodyHtml" binding:"required"`
+}
+
+type SendMailConfigO365 struct {
+	FromEmail               string `json:"fromEmail" binding:"required"`
+	ToEmail                 string `json:"toEmail" binding:"required"`
+	GraphApiToken           string `json:"graphApiToken" binding:"required"`
+	EmailSubject            string `json:"emailSubject" binding:"required"`
+	EnableTestVirtruEncrypt string `json:"enableTestVirtruEncrypt"`
+	EnableTestDLP           string `json:"enableTestDLP"`
+	Description             string `json:"description"`
+	AttachmentFilePath      string `json:"attachmentFilePath"`
 }

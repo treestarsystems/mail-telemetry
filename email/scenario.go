@@ -37,7 +37,7 @@ func GenerateCustomTimestampString() string {
 	*/
 	currentTime := time.Now().Local() // Ensure the time is in the system's local time zone
 	timeZone, _ := currentTime.Zone() // Get the time zone designation
-	return fmt.Sprintf("%s(%s)", currentTime.Format("15:04:05_01-02-2006"), timeZone)
+	return fmt.Sprintf("%s_%s_", currentTime.Format("15:04:05_01-02-2006"), timeZone)
 }
 
 func GenerateScenarioSubjectString(messageId string) string {
