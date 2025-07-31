@@ -11,6 +11,7 @@ func InitTasks() {
 	db.LoadDbMultipleScenariosToSqlite("scenarios")
 	email.InitializeEnvValuesOF365()
 
+	// ----- Test code
 	scenarios, _ := db.RetrieveScenarioFromSqliteAll("scenarios")
 	// scenarios, _ := db.RetrieveScenarioFromSqliteByColumnName("scenarios", "type", "O365")
 	scenarioCount := 0
