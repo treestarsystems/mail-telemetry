@@ -63,37 +63,25 @@ func LoadDbSingleScenarioToSqlite(scenario utils.Scenario, tableName string, sce
 
 		// Save = Upsert: credentials table entries
 		// Save = Upsert
-		DB.Table("credentials").Where(utils.Credential{ClientId: scenario.ClientId}).Assign(utils.Scenario{
-			ClientSecret: scenario.ClientSecret,
-			TenantId:     scenario.TenantId,
-			// Type:                    scenario.Type,
-			// EnableTestVirtruEncrypt: scenario.EnableTestVirtruEncrypt,
-			// EnableTestDLP:           scenario.EnableTestDLP,
-			// FromEmails:              scenario.FromEmails,
-			// ToEmails:                scenario.ToEmails,
-			// Description:             scenario.Description,
-			// AttachmentFilePath:      scenario.AttachmentFilePath,
-			// Hosts:                   scenario.Hosts,
-			// Ports:                   scenario.Ports,
-			// Endpoints:               scenario.Endpoints,
-			// SmtpUsername:            scenario.SmtpUsername,
-			// SmtpPassword:            scenario.SmtpPassword,
-			// FileLastModified:        scenario.FileLastModified,
-		}).FirstOrCreate(&utils.Scenario{
-			Type:                    scenario.Type,
-			EnableTestVirtruEncrypt: scenario.EnableTestVirtruEncrypt,
-			EnableTestDLP:           scenario.EnableTestDLP,
-			FromEmails:              scenario.FromEmails,
-			ToEmails:                scenario.ToEmails,
-			Description:             scenario.Description,
-			AttachmentFilePath:      scenario.AttachmentFilePath,
-			Hosts:                   scenario.Hosts,
-			Ports:                   scenario.Ports,
-			Endpoints:               scenario.Endpoints,
-			ClientId:                scenario.ClientId,
-			SmtpUsername:            scenario.SmtpUsername,
-			SmtpPassword:            scenario.SmtpPassword,
-			FileLastModified:        scenario.FileLastModified,
+		DB.Table("credentials").Where(utils.ScenarioAuth{ClientId: scenario.ClientId}).Assign(utils.ScenarioAuth{
+			ClientSecret:                        scenario.ClientSecret,
+			TenantId:                            scenario.TenantId,
+			CredentialName:                      "",
+			GraphApiToken:                       "",
+			TokenExpireAtTimeStampMilliseconds:  0,
+			TokenUpdatedAtTimeStampMilliseconds: 0,
+			SmtpUsername:                        scenario.SmtpUsername,
+			SmtpPassword:                        scenario.SmtpPassword,
+		}).FirstOrCreate(&utils.ScenarioAuth{
+			ClientId:                            scenario.ClientId,
+			ClientSecret:                        scenario.ClientSecret,
+			TenantId:                            scenario.TenantId,
+			CredentialName:                      "",
+			GraphApiToken:                       "",
+			TokenExpireAtTimeStampMilliseconds:  0,
+			TokenUpdatedAtTimeStampMilliseconds: 0,
+			SmtpUsername:                        scenario.SmtpUsername,
+			SmtpPassword:                        scenario.SmtpPassword,
 		})
 	}
 }

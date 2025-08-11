@@ -59,10 +59,13 @@ type ScenarioDetailsO365 struct {
 }
 
 type ScenarioAuthO365 struct {
-	ClientId      string `json:"clientId" binding:"required"`
-	GraphApiToken string `json:"graphApiToken" binding:"required"`
-	// ClientSecret string `json:"clientSecret" binding:"required"`
-	// TenantId     string `json:"tenantId" binding:"required"`
+	ClientId                       string `json:"clientId" binding:"required"`
+	ClientSecret                   string `json:"clientSecret" binding:"required"`
+	TenantId                       string `json:"tenantId" binding:"required"`
+	CredentialName                 string `json:"credentialName" binding:"required"`
+	GraphApiToken                  string `json:"graphApiToken" binding:"required"`
+	ExpireAtTimeStampMilliseconds  int32  `json:"expireAtTimeStampMilliseconds" binding:"required"`
+	UpdatedAtTimeStampMilliseconds int32  `json:"uxpireAtTimeStampMilliseconds" binding:"required"`
 }
 
 // ScenarioDetail Types: SMTP
@@ -87,6 +90,18 @@ type ScenarioMessage struct {
 	Subject       string   `json:"subject" binding:"required"`
 	BodyPlainText string   `json:"bodyPlainText" binding:"required"`
 	BodyHTML      string   `json:"bodyHtml" binding:"required"`
+}
+
+type ScenarioAuth struct {
+	ClientId                            string `json:"clientId" binding:"required"`
+	ClientSecret                        string `json:"clientSecret" binding:"required"`
+	TenantId                            string `json:"tenantId" binding:"required"`
+	CredentialName                      string `json:"credentialName" binding:"required"`
+	GraphApiToken                       string `json:"graphApiToken" binding:"required"`
+	TokenExpireAtTimeStampMilliseconds  int32  `json:"TokenExpireAtTimeStampMilliseconds" binding:"required"`
+	TokenUpdatedAtTimeStampMilliseconds int32  `json:"TokenUpdatedAtTimeStampMilliseconds" binding:"required"`
+	SmtpUsername                        string `json:"smtpUsername" binding:"required"`
+	SmtpPassword                        string `json:"smtpPassword" binding:"required"`
 }
 
 // type SendMailConfigO365 struct {
