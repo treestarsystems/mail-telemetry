@@ -8,6 +8,7 @@ type Credential struct {
 	Password     string `json:"password"`
 	ClientId     string `json:"clientId"`
 	ClientSecret string `json:"clientSecret"`
+	TenantId     string `json:"tenantId"`
 }
 
 type Scenario struct {
@@ -24,7 +25,6 @@ type Scenario struct {
 	Endpoints               string `json:"endpoints"`
 	ClientId                string `json:"clientId"`
 	ClientSecret            string `json:"clientSecret"`
-	ClientSecretId          string `json:"clientSecretId"`
 	TenantId                string `json:"tenantId"`
 	SmtpUsername            string `json:"smtpUsername"`
 	SmtpPassword            string `json:"smtpPassword"`
@@ -59,9 +59,10 @@ type ScenarioDetailsO365 struct {
 }
 
 type ScenarioAuthO365 struct {
-	ClientId     string `json:"clientId" binding:"required"`
-	ClientSecret string `json:"clientSecret" binding:"required"`
-	TenantId     string `json:"tenantId" binding:"required"`
+	ClientId      string `json:"clientId" binding:"required"`
+	GraphApiToken string `json:"graphApiToken" binding:"required"`
+	// ClientSecret string `json:"clientSecret" binding:"required"`
+	// TenantId     string `json:"tenantId" binding:"required"`
 }
 
 // ScenarioDetail Types: SMTP
@@ -88,13 +89,13 @@ type ScenarioMessage struct {
 	BodyHTML      string   `json:"bodyHtml" binding:"required"`
 }
 
-type SendMailConfigO365 struct {
-	FromEmail               string `json:"fromEmail" binding:"required"`
-	ToEmail                 string `json:"toEmail" binding:"required"`
-	GraphApiToken           string `json:"graphApiToken" binding:"required"`
-	EmailSubject            string `json:"emailSubject" binding:"required"`
-	EnableTestVirtruEncrypt string `json:"enableTestVirtruEncrypt"`
-	EnableTestDLP           string `json:"enableTestDLP"`
-	Description             string `json:"description"`
-	AttachmentFilePath      string `json:"attachmentFilePath"`
-}
+// type SendMailConfigO365 struct {
+// 	FromEmail               string `json:"fromEmail" binding:"required"`
+// 	ToEmail                 string `json:"toEmail" binding:"required"`
+// 	GraphApiToken           string `json:"graphApiToken" binding:"required"`
+// 	EmailSubject            string `json:"emailSubject" binding:"required"`
+// 	EnableTestVirtruEncrypt string `json:"enableTestVirtruEncrypt"`
+// 	EnableTestDLP           string `json:"enableTestDLP"`
+// 	Description             string `json:"description"`
+// 	AttachmentFilePath      string `json:"attachmentFilePath"`
+// }

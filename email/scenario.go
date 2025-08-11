@@ -86,10 +86,14 @@ func GenerateMessageBodies(scenario *utils.Scenario, scenarioHostInstance, messa
 func GenerateScenarioAuth(scenario *utils.Scenario) (interface{}, error) {
 	switch scenario.Type {
 	case "O365":
+		// This should be retrieved from the DB
 		var scenarioAuth = utils.ScenarioAuthO365{
-			ClientId:     scenario.ClientId,
-			ClientSecret: scenario.ClientSecret,
-			TenantId:     scenario.TenantId,
+			ClientId:      scenario.ClientId,
+			GraphApiToken: "",
+			// ClientSecret: "",
+			// TenantId:     "",
+			// ClientSecret: scenario.ClientSecret,
+			// TenantId:     scenario.TenantId,
 		}
 		return scenarioAuth, nil
 	case "SMTP":
