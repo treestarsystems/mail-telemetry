@@ -28,7 +28,7 @@ func LoadDbSingleScenarioToSqlite(scenario utils.Scenario, tableName string, sce
 	}
 
 	if existingScenario.FileLastModified != scenarioFileModificationTime {
-		// Save = Upsert
+		// Save = Upsert: scenario table entries
 		DB.Table(tableName).Where(utils.Scenario{Name: scenario.Name}).Assign(utils.Scenario{
 			Type:                    scenario.Type,
 			EnableTestVirtruEncrypt: scenario.EnableTestVirtruEncrypt,
@@ -61,12 +61,24 @@ func LoadDbSingleScenarioToSqlite(scenario utils.Scenario, tableName string, sce
 			FileLastModified:        scenario.FileLastModified,
 		})
 
+		// // Generate Token if scenario.type is O365
+		// token := ""
+		// // Get current time in milliseconds
+		// tokenUpdatedAtTimeStampMilliseconds := int32(time.Now().UnixNano() / int64(time.Millisecond))
+		// // Add 55 minutes to current time
+		// tokenExpireAtTimeStampMilliseconds := tokenUpdatedAtTimeStampMilliseconds + 3300000
+
+		// if scenario.Type == "O365" {
+		// 	token, err = email.GraphApiGenerateToken(scenario.Auth)
+		// 	if err != nil {
+		// 		log.Print(err)
+		// 	}
+		// }
 		// Save = Upsert: credentials table entries
-		// Save = Upsert
 		DB.Table("credentials").Where(utils.ScenarioAuth{ClientId: scenario.ClientId}).Assign(utils.ScenarioAuth{
 			ClientSecret:                        scenario.ClientSecret,
 			TenantId:                            scenario.TenantId,
-			CredentialName:                      "",
+			CredentialName:                      scenario.Name,
 			GraphApiToken:                       "",
 			TokenExpireAtTimeStampMilliseconds:  0,
 			TokenUpdatedAtTimeStampMilliseconds: 0,
@@ -76,7 +88,7 @@ func LoadDbSingleScenarioToSqlite(scenario utils.Scenario, tableName string, sce
 			ClientId:                            scenario.ClientId,
 			ClientSecret:                        scenario.ClientSecret,
 			TenantId:                            scenario.TenantId,
-			CredentialName:                      "",
+			CredentialName:                      scenario.Name,
 			GraphApiToken:                       "",
 			TokenExpireAtTimeStampMilliseconds:  0,
 			TokenUpdatedAtTimeStampMilliseconds: 0,
