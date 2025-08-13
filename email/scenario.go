@@ -3,7 +3,6 @@ package email
 import (
 	"errors"
 	"fmt"
-	"log"
 	"mail-telemetry/utils"
 	"strings"
 	"time"
@@ -83,31 +82,6 @@ func GenerateMessageBodies(scenario *utils.Scenario, scenarioHostInstance, messa
 	return messageBodyTextPlain, messageBodyHtml
 }
 
-func GenerateScenarioAuth(scenario *utils.Scenario) (interface{}, error) {
-	switch scenario.Type {
-	case "O365":
-		// This should be retrieved from the DB
-		var scenarioAuth = utils.ScenarioAuthO365{
-			ClientId:      scenario.ClientId,
-			GraphApiToken: "",
-			// ClientSecret: "",
-			// TenantId:     "",
-			// ClientSecret: scenario.ClientSecret,
-			// TenantId:     scenario.TenantId,
-		}
-		return scenarioAuth, nil
-	case "SMTP":
-		var scenarioAuth = utils.ScenarioAuthSMTP{
-			Username: scenario.SmtpUsername,
-			Password: scenario.SmtpPassword,
-		}
-		return scenarioAuth, nil
-	default:
-		errorString := fmt.Sprintf("error - GenerateScenarioAuth: Unsupported scenario type(%s)", scenario.Type)
-		return nil, errors.New(errorString)
-	}
-}
-
 func GenerateScenarioHost(scenario *utils.Scenario) ([]interface{}, error) {
 	var scenarioHostInstances []interface{}
 
@@ -167,59 +141,39 @@ func GenerateScenarioMessage(scenario *utils.Scenario, scenarioHostInstance stri
 	}
 }
 
-func GenerateScenarioInstance(scenario *utils.Scenario) []interface{} {
-	var scenarioInstances []interface{}
+func GenerateScenarioInstance(scenario *utils.Scenario) []utils.ScenarioDetails {
+	var scenarioInstances []utils.ScenarioDetails
+	var errorMessages []string
 
-	switch scenario.Type {
-	case "O365":
-		var errorMessages []string
-		scenarioAuth, err := GenerateScenarioAuth(scenario)
-		if err != nil {
-			errorMessages = append(errorMessages, err.Error())
-		}
-		scenarioHostInstances, err := GenerateScenarioHost(scenario)
-		if err != nil {
-			errorMessages = append(errorMessages, err.Error())
-		}
+	// Generate auth sub struct
+	scenarioAuth := utils.ScenarioAuth{
+		ClientId:                            scenario.ClientId,
+		ClientSecret:                        scenario.ClientSecret,
+		TenantId:                            scenario.TenantId,
+		CredentialName:                      scenario.Name,
+		GraphApiToken:                       "",
+		TokenExpireAtTimeStampMilliseconds:  0,
+		TokenUpdatedAtTimeStampMilliseconds: 0,
+		SmtpUsername:                        scenario.SmtpUsername,
+		SmtpPassword:                        scenario.SmtpPassword,
+	}
 
-		for _, instanceHostDetails := range scenarioHostInstances {
-			scenarioInstanceDetails := utils.ScenarioDetailsO365{
-				Scenario: *scenario,
-				Auth:     scenarioAuth.(utils.ScenarioAuthO365),
-				Host:     instanceHostDetails.(utils.ScenarioHost),
-				Message:  GenerateScenarioMessage(scenario, instanceHostDetails.(utils.ScenarioHost).InstanceURI),
-				Errors:   errorMessages,
-			}
+	// Generate host details
+	scenarioHostInstances, err := GenerateScenarioHost(scenario)
+	if err != nil {
+		errorMessages = append(errorMessages, err.Error())
+	}
 
-			scenarioInstances = append(scenarioInstances, scenarioInstanceDetails)
+	// Put it all together per instance
+	for _, instanceHostDetails := range scenarioHostInstances {
+		scenarioInstanceDetails := utils.ScenarioDetails{
+			Scenario: *scenario,
+			Auth:     scenarioAuth,
+			Host:     instanceHostDetails.(utils.ScenarioHost),
+			Message:  GenerateScenarioMessage(scenario, instanceHostDetails.(utils.ScenarioHost).InstanceURI),
+			Errors:   errorMessages,
 		}
-	case "SMTP":
-		var errorMessages []string
-		scenarioAuth, err := GenerateScenarioAuth(scenario)
-		if err != nil {
-			errorMessages = append(errorMessages, err.Error())
-		}
-		scenarioHostInstances, err := GenerateScenarioHost(scenario)
-		if err != nil {
-			errorMessages = append(errorMessages, err.Error())
-		}
-
-		for _, instanceHostDetails := range scenarioHostInstances {
-			scenarioInstanceDetails := utils.ScenarioDetailsSMTP{
-				Scenario: *scenario,
-				Auth:     scenarioAuth.(utils.ScenarioAuthSMTP),
-				Host:     instanceHostDetails.(utils.ScenarioHost),
-				Message:  GenerateScenarioMessage(scenario, instanceHostDetails.(utils.ScenarioHost).InstanceURI),
-				Errors:   errorMessages,
-			}
-
-			scenarioInstances = append(scenarioInstances, scenarioInstanceDetails)
-		}
-	default:
-		errorString := fmt.Sprintf("error - GenerateScenarioHost: Unsupported scenario type(%s)", scenario.Type)
-		// return nil, errors.New(errorString)
-		// scenarioInstances = append(scenarioInstances,)
-		log.Print(errorString)
+		scenarioInstances = append(scenarioInstances, scenarioInstanceDetails)
 	}
 	return scenarioInstances
 }
