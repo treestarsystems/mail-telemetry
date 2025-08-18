@@ -22,8 +22,23 @@ type Scenario struct {
 	FileLastModified        string `json:"fileLastModified" binding:"required"`
 }
 
+type ScenarioTable struct {
+	Name                    string `json:"name" binding:"required"`
+	Type                    string `json:"type" binding:"required"`
+	EnableTestVirtruEncrypt string `json:"enableTestVirtruEncrypt"`
+	EnableTestDLP           string `json:"enableTestDLP"`
+	FromEmails              string `json:"fromEmails" binding:"required"`
+	ToEmails                string `json:"toEmails" binding:"required"`
+	Description             string `json:"description"`
+	AttachmentFilePath      string `json:"attachmentFilePath"`
+	Hosts                   string `json:"hosts"`
+	Ports                   string `json:"ports"`
+	Endpoints               string `json:"endpoints"`
+	FileLastModified        string `json:"fileLastModified" binding:"required"`
+}
+
 type LoadDbInsertGormScenario struct {
-	Scenario
+	ScenarioTable
 	ID        uint           `gorm:"primarykey"`
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
@@ -42,11 +57,11 @@ type ScenarioHost struct {
 
 // ScenarioDetail Types: O365
 type ScenarioDetails struct {
-	Scenario Scenario        `json:"scenario" binding:"required"`
-	Auth     ScenarioAuth    `json:"scenarioAuth" binding:"required"`
-	Host     ScenarioHost    `json:"scenarioHost" binding:"required"`
-	Message  ScenarioMessage `json:"scenarioMessage" binding:"required"`
-	Errors   []string        `json:"errors" binding:"required"`
+	Details ScenarioTable `json:"details" binding:"required"`
+	// Auth     ScenarioAuth    `json:"scenarioAuth" binding:"required"`
+	Host    ScenarioHost    `json:"scenarioHost" binding:"required"`
+	Message ScenarioMessage `json:"scenarioMessage" binding:"required"`
+	Errors  []string        `json:"errors" binding:"required"`
 }
 
 // Scenario Detail Message
@@ -65,8 +80,8 @@ type ScenarioAuth struct {
 	TenantId                            string `json:"tenantId" binding:"required"`
 	CredentialName                      string `json:"credentialName" binding:"required"`
 	GraphApiToken                       string `json:"graphApiToken" binding:"required"`
-	TokenExpireAtTimeStampMilliseconds  int32  `json:"TokenExpireAtTimeStampMilliseconds" binding:"required"`
-	TokenUpdatedAtTimeStampMilliseconds int32  `json:"TokenUpdatedAtTimeStampMilliseconds" binding:"required"`
+	TokenExpireAtTimeStampMilliseconds  int64  `json:"TokenExpireAtTimeStampMilliseconds" binding:"required"`
+	TokenUpdatedAtTimeStampMilliseconds int64  `json:"TokenUpdatedAtTimeStampMilliseconds" binding:"required"`
 	SmtpUsername                        string `json:"smtpUsername" binding:"required"`
 	SmtpPassword                        string `json:"smtpPassword" binding:"required"`
 }

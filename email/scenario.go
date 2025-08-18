@@ -45,7 +45,7 @@ func GenerateScenarioSubjectString(messageId string) string {
 	return subject
 }
 
-func GenerateMessageBodies(scenario *utils.Scenario, scenarioHostInstance, messageId string) (string, string) {
+func GenerateMessageBodies(scenario *utils.ScenarioTable, scenarioHostInstance, messageId string) (string, string) {
 	var messageBodyTextPlain, messageBodyHtml string
 
 	messageBodyTextPlainTemplate := `Scenario Name: %s
@@ -82,7 +82,7 @@ func GenerateMessageBodies(scenario *utils.Scenario, scenarioHostInstance, messa
 	return messageBodyTextPlain, messageBodyHtml
 }
 
-func GenerateScenarioHost(scenario *utils.Scenario) ([]interface{}, error) {
+func GenerateScenarioHost(scenario *utils.ScenarioTable) ([]interface{}, error) {
 	var scenarioHostInstances []interface{}
 
 	// This info will be the same for all instances.
@@ -120,7 +120,7 @@ func GenerateScenarioHost(scenario *utils.Scenario) ([]interface{}, error) {
 	return scenarioHostInstances, nil
 }
 
-func GenerateScenarioMessage(scenario *utils.Scenario, scenarioHostInstance string) utils.ScenarioMessage {
+func GenerateScenarioMessage(scenario *utils.ScenarioTable, scenarioHostInstance string) utils.ScenarioMessage {
 	messageId := utils.RandomAplhaNumericString(20)
 	// Convert email list to slices
 	fromEmailsToSlice := utils.ConvertCommaSeparatedStringToSlice(scenario.FromEmails)
@@ -141,22 +141,10 @@ func GenerateScenarioMessage(scenario *utils.Scenario, scenarioHostInstance stri
 	}
 }
 
-func GenerateScenarioInstance(scenario *utils.Scenario) []utils.ScenarioDetails {
+// func GenerateScenarioInstance(scenario *utils.Scenario) []utils.ScenarioDetails {
+func GenerateScenarioInstance(scenario *utils.ScenarioTable) []utils.ScenarioDetails {
 	var scenarioInstances []utils.ScenarioDetails
 	var errorMessages []string
-
-	// Generate auth sub struct
-	scenarioAuth := utils.ScenarioAuth{
-		ClientId:                            scenario.ClientId,
-		ClientSecret:                        scenario.ClientSecret,
-		TenantId:                            scenario.TenantId,
-		CredentialName:                      scenario.Name,
-		GraphApiToken:                       "",
-		TokenExpireAtTimeStampMilliseconds:  0,
-		TokenUpdatedAtTimeStampMilliseconds: 0,
-		SmtpUsername:                        scenario.SmtpUsername,
-		SmtpPassword:                        scenario.SmtpPassword,
-	}
 
 	// Generate host details
 	scenarioHostInstances, err := GenerateScenarioHost(scenario)
@@ -167,11 +155,10 @@ func GenerateScenarioInstance(scenario *utils.Scenario) []utils.ScenarioDetails 
 	// Put it all together per instance
 	for _, instanceHostDetails := range scenarioHostInstances {
 		scenarioInstanceDetails := utils.ScenarioDetails{
-			Scenario: *scenario,
-			Auth:     scenarioAuth,
-			Host:     instanceHostDetails.(utils.ScenarioHost),
-			Message:  GenerateScenarioMessage(scenario, instanceHostDetails.(utils.ScenarioHost).InstanceURI),
-			Errors:   errorMessages,
+			Details: *scenario,
+			Host:    instanceHostDetails.(utils.ScenarioHost),
+			Message: GenerateScenarioMessage(scenario, instanceHostDetails.(utils.ScenarioHost).InstanceURI),
+			Errors:  errorMessages,
 		}
 		scenarioInstances = append(scenarioInstances, scenarioInstanceDetails)
 	}

@@ -23,7 +23,7 @@ func LoadDbVerifySqliteExists() {
 func LoadDbSingleScenarioToSqlite(scenario utils.Scenario, scenarioFileModificationTime string) {
 	// TODO: Need a way to get the correct file path no matter the OS.
 	// Check if the scenario exists and file_last_modified is different
-	var existingScenario utils.Scenario
+	var existingScenario utils.ScenarioTable
 	err := DB.Table("scenarios").Where("name = ?", scenario.Name).First(&existingScenario).Error
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		log.Printf("info - SQLite: Failed to query table %s: %v", "scenarios", err)
@@ -31,7 +31,7 @@ func LoadDbSingleScenarioToSqlite(scenario utils.Scenario, scenarioFileModificat
 
 	if existingScenario.FileLastModified != scenarioFileModificationTime {
 		// Save = Upsert: scenario table entries
-		DB.Table("scenarios").Where(utils.Scenario{Name: scenario.Name}).Assign(utils.Scenario{
+		DB.Table("scenarios").Where(utils.ScenarioTable{Name: scenario.Name}).Assign(utils.ScenarioTable{
 			Type:                    scenario.Type,
 			EnableTestVirtruEncrypt: scenario.EnableTestVirtruEncrypt,
 			EnableTestDLP:           scenario.EnableTestDLP,
@@ -42,11 +42,8 @@ func LoadDbSingleScenarioToSqlite(scenario utils.Scenario, scenarioFileModificat
 			Hosts:                   scenario.Hosts,
 			Ports:                   scenario.Ports,
 			Endpoints:               scenario.Endpoints,
-			ClientId:                scenario.ClientId,
-			SmtpUsername:            scenario.SmtpUsername,
-			SmtpPassword:            scenario.SmtpPassword,
 			FileLastModified:        scenario.FileLastModified,
-		}).FirstOrCreate(&utils.Scenario{
+		}).FirstOrCreate(&utils.ScenarioTable{
 			Type:                    scenario.Type,
 			EnableTestVirtruEncrypt: scenario.EnableTestVirtruEncrypt,
 			EnableTestDLP:           scenario.EnableTestDLP,
@@ -57,15 +54,12 @@ func LoadDbSingleScenarioToSqlite(scenario utils.Scenario, scenarioFileModificat
 			Hosts:                   scenario.Hosts,
 			Ports:                   scenario.Ports,
 			Endpoints:               scenario.Endpoints,
-			ClientId:                scenario.ClientId,
-			SmtpUsername:            scenario.SmtpUsername,
-			SmtpPassword:            scenario.SmtpPassword,
 			FileLastModified:        scenario.FileLastModified,
 		})
 	}
 }
 
-func LoadDbSingleCredentialToSqlite(scenario utils.Scenario, scenarioFileModificationTime string) {
+func LoadDbSingleCredentialToSqlite(scenario utils.Scenario) {
 	// Save = Upsert: credentials table entries
 	DB.Table("credentials").Where(utils.ScenarioAuth{CredentialName: scenario.Name}).Assign(utils.ScenarioAuth{
 		ClientId:                            scenario.ClientId,
@@ -88,6 +82,21 @@ func LoadDbSingleCredentialToSqlite(scenario utils.Scenario, scenarioFileModific
 		SmtpPassword:                        scenario.SmtpPassword,
 	})
 	// }
+}
+
+func UpdateDbGraphApiToken(scenarioName, graphApiToken string, graphApiTokenAt int64) {
+	currentTimeMilliseconds := time.Now().UnixNano() / int64(time.Millisecond)
+	// Save = Upsert: credentials table entries
+	DB.Table("credentials").Where(utils.ScenarioAuth{CredentialName: scenarioName}).Assign(utils.ScenarioAuth{
+		GraphApiToken:                       graphApiToken,
+		TokenExpireAtTimeStampMilliseconds:  graphApiTokenAt,
+		TokenUpdatedAtTimeStampMilliseconds: currentTimeMilliseconds,
+	}).FirstOrCreate(&utils.ScenarioAuth{
+		CredentialName:                      scenarioName,
+		GraphApiToken:                       graphApiToken,
+		TokenExpireAtTimeStampMilliseconds:  graphApiTokenAt,
+		TokenUpdatedAtTimeStampMilliseconds: currentTimeMilliseconds,
+	})
 }
 
 // func LoadDbMultipleScenariosToSqlite(tableName string) {
@@ -113,7 +122,7 @@ func LoadDbMultipleScenariosToSqlite() {
 	for i, scenario := range scenarios {
 		log.Printf("-- Scenario %v: Loading to database\n", i+1)
 		LoadDbSingleScenarioToSqlite(scenario, ScenarioFileModificationTime)
-		LoadDbSingleCredentialToSqlite(scenario, ScenarioFileModificationTime)
+		LoadDbSingleCredentialToSqlite(scenario)
 	}
 	log.Println("-- Loading scenarios, complete")
 }

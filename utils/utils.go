@@ -8,6 +8,7 @@ import (
 	"net"
 	"os"
 	"strings"
+	"time"
 )
 
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
@@ -121,4 +122,9 @@ func GetPreferredLocalOutboundIP() string {
 	}
 	defer conn.Close()
 	return conn.LocalAddr().(*net.UDPAddr).IP.String()
+}
+
+func IsExpired(timeStampMilliseconds int64) bool {
+	currentTimeMilliseconds := time.Now().UnixNano() / int64(time.Millisecond)
+	return currentTimeMilliseconds <= timeStampMilliseconds
 }

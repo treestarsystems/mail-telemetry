@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"mail-telemetry/db"
 	"mail-telemetry/utils"
 	"net/http"
 	"os"
@@ -19,10 +20,9 @@ func InitializeEnvValuesOF365() {
 }
 
 // The credentails should be loaded into the DB. Then this func takes the clientId and retrieves that info
-// func GraphApiGenerateToken(scenario utils.ScenarioDetailsO365) (string, error) {
-func GraphApiGenerateToken(scenario utils.ScenarioDetails) (string, error) {
-	tokenUrl := fmt.Sprintf("https://login.microsoftonline.com/%s/oauth2/v2.0/token", scenario.Auth.TenantId)
-	tokenQuery := fmt.Sprintf("scope=%s&grant_type=%s&client_id=%s&client_secret=%s", GRAPH_USER_SCOPES, GRAPH_GRANT_TYPE, scenario.Auth.ClientId, scenario.Auth.ClientSecret)
+func GraphApiGenerateToken(scenarioAuth utils.ScenarioAuth) (string, error) {
+	tokenUrl := fmt.Sprintf("https://login.microsoftonline.com/%s/oauth2/v2.0/token", scenarioAuth.TenantId)
+	tokenQuery := fmt.Sprintf("scope=%s&grant_type=%s&client_id=%s&client_secret=%s", GRAPH_USER_SCOPES, GRAPH_GRANT_TYPE, scenarioAuth.ClientId, scenarioAuth.ClientSecret)
 	queryPayload := strings.NewReader(tokenQuery)
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", tokenUrl, queryPayload)
@@ -68,8 +68,52 @@ func GraphApiGenerateToken(scenario utils.ScenarioDetails) (string, error) {
 	return token, nil
 }
 
+// Function handles the interaction of retrieving the token from the db, checking expiration, refreshing token, then returning token string
+func GraphApiHandleCacheToken(scenarioDetails utils.ScenarioDetails) (string, error) {
+	// var grapAipToken string
+	// Retrieve scenario credentials from DB.
+	scenarioCredentials, err := db.RetrieveCredentialFromSqliteByColumnName("credentials", "credential_name", scenarioDetails.Details.Name)
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
+
+	// Check if nothing is returned
+	if len(scenarioCredentials) == 0 {
+		graphApiToken, err := GraphApiGenerateToken(scenarioCredentials[0])
+		if err != nil {
+			fmt.Println(err)
+			return "", err
+		}
+		return graphApiToken, nil
+
+	}
+	// Check if existing token is empty
+	if scenarioCredentials[0].GraphApiToken == "" {
+		graphApiToken, err := GraphApiGenerateToken(scenarioCredentials[0])
+		if err != nil {
+			fmt.Println(err)
+			return "", err
+		}
+		return graphApiToken, nil
+	}
+
+	// Check if token is expired.
+	// scenarioCredentials
+
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return "", err
+	// }
+	// return graphApiToken, nil
+
+	return "", nil
+}
+
 // func GraphApiSendMail(scenarioSendMailConfig utils.ScenarioDetailsO365) {
-func GraphApiSendMail(scenarioSendMailConfig utils.ScenarioDetails) {
+func GraphApiSendMail(ScenarioDetails utils.ScenarioDetails) {
+	// grapAipToken := GraphApiGenerateToken(ScenarioDetails)
+	// fmt.Println(grapAipToken)
 	// url := fmt.Sprintf("https://graph.microsoft.com/v1.0/users/%s/sendMail", sendMailConfig.FromEmail)
 	// payloadString := fmt.Sprintf(`{
 	//       "message": {
