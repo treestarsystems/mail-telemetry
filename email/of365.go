@@ -19,7 +19,7 @@ func InitializeEnvValuesOF365() {
 	GRAPH_GRANT_TYPE = os.Getenv("GRAPH_GRANT_TYPE")
 }
 
-// The credentails should be loaded into the DB. Then this func takes the clientId and retrieves that info
+// The credentials should be loaded into the DB. Then this func takes the clientId and retrieves that info
 func GraphApiGenerateToken(scenarioAuth utils.ScenarioAuth) (string, error) {
 	tokenUrl := fmt.Sprintf("https://login.microsoftonline.com/%s/oauth2/v2.0/token", scenarioAuth.TenantId)
 	tokenQuery := fmt.Sprintf("scope=%s&grant_type=%s&client_id=%s&client_secret=%s", GRAPH_USER_SCOPES, GRAPH_GRANT_TYPE, scenarioAuth.ClientId, scenarioAuth.ClientSecret)
@@ -70,7 +70,6 @@ func GraphApiGenerateToken(scenarioAuth utils.ScenarioAuth) (string, error) {
 
 // Function handles the interaction of retrieving the token from the db, checking expiration, refreshing token, then returning token string
 func GraphApiHandleCacheToken(scenarioDetails utils.ScenarioDetails) (string, error) {
-	// var grapAipToken string
 	// Retrieve scenario credentials from DB.
 	scenarioCredentials, err := db.RetrieveCredentialFromSqliteByColumnName("credentials", "credential_name", scenarioDetails.Details.Name)
 	if err != nil {
@@ -98,64 +97,5 @@ func GraphApiHandleCacheToken(scenarioDetails utils.ScenarioDetails) (string, er
 		return graphApiToken, nil
 	}
 
-	// Check if token is expired.
-	// scenarioCredentials
-
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return "", err
-	// }
-	// return graphApiToken, nil
-
 	return "", nil
-}
-
-// func GraphApiSendMail(scenarioSendMailConfig utils.ScenarioDetailsO365) {
-func GraphApiSendMail(ScenarioDetails utils.ScenarioDetails) {
-	// grapAipToken := GraphApiGenerateToken(ScenarioDetails)
-	// fmt.Println(grapAipToken)
-	// url := fmt.Sprintf("https://graph.microsoft.com/v1.0/users/%s/sendMail", sendMailConfig.FromEmail)
-	// payloadString := fmt.Sprintf(`{
-	//       "message": {
-	//           "subject": "%s",
-	//           "body": {
-	//               "contentType": "HTML",
-	//               "content": "%s"
-	//           },
-	//           "toRecipients": [
-	//               {
-	//                   "emailAddress": {
-	//                       "address": "%s"
-	//                   }
-	//               }
-	//           ]
-	//       },
-	//       saveToSentItems: false
-	//   }`, sendMailConfig.EmailSubject, sendMailConfig.EmailSubject, sendMailConfig.ToEmail)
-	// payload := strings.NewReader(payloadString)
-
-	// client := &http.Client{}
-	// req, err := http.NewRequest("POST", url, payload)
-
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return
-	// }
-	// req.Header.Add("Content-Type", "application/json")
-	// authorizationString := fmt.Sprintf("Bearer %s", sendMailConfig.GraphApiToken)
-	// req.Header.Add("Authorization", authorizationString)
-
-	// res, err := client.Do(req)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return
-	// }
-	// defer res.Body.Close()
-
-	// body, err := io.ReadAll(res.Body)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return
-	// }
-	// fmt.Println(string(body))
 }
