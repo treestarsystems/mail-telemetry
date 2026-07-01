@@ -49,6 +49,14 @@ type LoadDbInsertGormCredential struct {
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
+type LoadDbInsertGormScenarioQueue struct {
+	ID           uint           `gorm:"primarykey"`
+	ScenarioName string         `gorm:"index"`
+	MessageID    string         `gorm:"index"`
+	Payload      string         `gorm:"type:text"`
+	DeletedAt    gorm.DeletedAt `gorm:"index"`
+}
+
 type ScenarioHost struct {
 	InstanceURI          string `json:"instanceUri" binding:"required"`
 	OriginHostName       string `json:"originHostName" binding:"required"`

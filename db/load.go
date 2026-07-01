@@ -1,6 +1,7 @@
 package db
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -97,6 +98,32 @@ func UpdateDbGraphApiToken(scenarioName, graphApiToken string, graphApiTokenAt i
 		TokenExpireAtTimeStampMilliseconds:  graphApiTokenAt,
 		TokenUpdatedAtTimeStampMilliseconds: currentTimeMilliseconds,
 	})
+}
+
+func LoadDbScenarioQueueToSqlite(scenarioInstances []utils.ScenarioDetails) error {
+	if len(scenarioInstances) == 0 {
+		return nil
+	}
+
+	queueRecords := make([]utils.LoadDbInsertGormScenarioQueue, 0, len(scenarioInstances))
+	for _, scenarioInstance := range scenarioInstances {
+		payloadBytes, err := json.Marshal(scenarioInstance)
+		if err != nil {
+			return fmt.Errorf("error - SQLite: failed to marshal scenario instance for scenarioQueue: %w", err)
+		}
+
+		queueRecords = append(queueRecords, utils.LoadDbInsertGormScenarioQueue{
+			ScenarioName: scenarioInstance.Details.Name,
+			MessageID:    scenarioInstance.Message.ID,
+			Payload:      string(payloadBytes),
+		})
+	}
+
+	if err := DB.Table("scenarioQueue").Create(&queueRecords).Error; err != nil {
+		return fmt.Errorf("error - SQLite: failed to insert rows into scenarioQueue: %w", err)
+	}
+
+	return nil
 }
 
 // func LoadDbMultipleScenariosToSqlite(tableName string) {

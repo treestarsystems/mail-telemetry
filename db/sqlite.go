@@ -16,6 +16,17 @@ var SQLiteDbName *string
 
 func LoadDbConnectToSqlite() {
 	tableNames := strings.Split(os.Getenv("DB_TABLE_NAMES"), ",")
+	hasScenarioQueueTable := false
+	for _, tableName := range tableNames {
+		if strings.TrimSpace(tableName) == "scenarioQueue" {
+			hasScenarioQueueTable = true
+			break
+		}
+	}
+	if !hasScenarioQueueTable {
+		tableNames = append(tableNames, "scenarioQueue")
+	}
+
 	sqliteDbName := os.Getenv("DB_SQLITE_FILENAME")
 	SQLiteDbName = &sqliteDbName
 
@@ -26,6 +37,7 @@ func LoadDbConnectToSqlite() {
 
 	// Migrate the schema/Create the tables.
 	for _, tableName := range tableNames {
+		tableName = strings.TrimSpace(tableName)
 		if tableName == "scenarios" {
 			err = db.Table(tableName).AutoMigrate(&utils.LoadDbInsertGormScenario{})
 			if err != nil {
@@ -36,6 +48,12 @@ func LoadDbConnectToSqlite() {
 			err = db.Table(tableName).AutoMigrate(&utils.LoadDbInsertGormCredential{})
 			if err != nil {
 				log.Printf("error - SQLite: Unable to migrate the Credentials schema: %s\n", err)
+			}
+		}
+		if tableName == "scenarioQueue" {
+			err = db.Table(tableName).AutoMigrate(&utils.LoadDbInsertGormScenarioQueue{})
+			if err != nil {
+				log.Printf("error - SQLite: Unable to migrate the ScenarioQueue schema: %s\n", err)
 			}
 		}
 	}
